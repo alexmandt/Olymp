@@ -2,28 +2,38 @@
 
 ## The simple distributed compute engine
 
-### Get started
+## Get started
 
-#### Run master node
+### Run master node
+
+**Master machine (IP: 192.168.0.100)**
 
 ```bash
 $ olymp --master --name master.local --webui
 ```
 
-#### Run child node
+### Run child nodes
+
+**Machine 1**
 
 ```bash
 $ olymp --child 192.168.0.100:17930 --name child1.local --user admin --password admin
 ```
 
-#### Connect to master node CLI configuration
+**Machine 2**
+
+```bash
+$ olymp --child 192.168.0.100:17930 --name child2.local --user admin --password admin
+```
+
+### Connect to master node CLI configuration
 
 ```bash
 $ olymp --configure localhost:17929 --user admin --password admin
 master.local>
 ```
 
-#### Upload DLL to master node
+### Upload DLL to master node
 
 We will upload a simple calculator program that we wrote.
 
@@ -31,14 +41,14 @@ We will upload a simple calculator program that we wrote.
 master.local> put program "/home/u1/calc.dll" as "calculator"
 ```
 
-#### Distribute DLL to child nodes
+### Distribute DLL to child nodes
 
 ```bash
 master.local> distribute "calculator" to "child1.local"
 master.local> distribute "calculator" to "child2.local"
 ```
 
-#### Write a simple pipeline
+### Write a simple pipeline
 
 This pipeline can access our calculator program and use it from our master node.
 
@@ -58,7 +68,7 @@ function add(w,x,y,z){
 }
 ```
 
-#### Deploy the pipeline
+### Deploy the pipeline
 
 ```bash
 master.local> put pipeline "/home/u1/add.js" as "add"
