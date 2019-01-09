@@ -1,6 +1,6 @@
 # 🏔️ Olymp
 
-## A distributed compute engine that allows you to focus on *your* work
+## The simple distributed compute engine
 
 ### Get started
 
