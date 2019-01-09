@@ -46,7 +46,7 @@ This pipeline can access our calculator program and use it from our master node.
 function add(w,x,y,z){
     var node1 = getNode("child1.local");
     var node2 = getNode("child2.local");
-	var c1 = node1.getWorker("calculator");
+    var c1 = node1.getWorker("calculator");
     var c2 = node2.getWorker("calculator");
     
     simultan([
