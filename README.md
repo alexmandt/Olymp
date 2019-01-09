@@ -13,7 +13,7 @@ $ olymp --master --name master.local --webui
 #### Run child node
 
 ```bash
-$olymp --child --name child1.local 
+$ olymp --child --name child1.local 
 ```
 
 #### Connect to master node CLI configuration
