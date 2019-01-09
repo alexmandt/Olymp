@@ -28,7 +28,7 @@ master.local>
 We will upload a simple calculator program that we wrote.
 
 ```bash
-master.local> put worker program "/home/u1/calc.dll" as "calculator"
+master.local> put program "/home/u1/calc.dll" as "calculator"
 ```
 
 #### Distribute DLL to child nodes
@@ -61,7 +61,8 @@ function add(w,x,y,z){
 #### Deploy the pipeline
 
 ```bash
-master.local> put master pipeline "/home/u1/add.js"
+master.local> put pipeline "/home/u1/add.js" as "add"
+master.local> distribute "add" to self
 ```
 
 ### Default ports (master)

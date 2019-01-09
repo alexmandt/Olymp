@@ -2,15 +2,18 @@ namespace Olymp.Communication
 {
     public struct Message
     {
-        public string user;
-        public Command command;
-        public byte[] content;
+        public string User;
+        public Command Command;
+        public byte[] Content;
     }
     
     public enum Command
     {
         REQ,
         OK,
-        CONF_ADD_USER
+        FAIL,
+        CONF_ADD_USER,
+        CONF_PUT_PIPELINE,
+        CONF_PUT_PROGRAM,
     }
 }

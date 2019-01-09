@@ -5,10 +5,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Child" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\Olymp.Communication\Olymp.Communication.csproj" />
       <ProjectReference Include="..\Olymp.Util\Olymp.Util.csproj" />
     </ItemGroup>

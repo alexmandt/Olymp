@@ -38,9 +38,9 @@ namespace Olymp.Communication
 
                 var msg = JsonConvert.SerializeObject(new Message
                 {
-                    user = username,
-                    command = command,
-                    content = RijndaelManager.EncryptStringToBytes(message, pwd, iv)
+                    User = username,
+                    Command = command,
+                    Content = RijndaelManager.EncryptStringToBytes(message, pwd, iv)
                 });
 
                 #endregion
@@ -57,7 +57,7 @@ namespace Olymp.Communication
 
                 var returnData = JsonConvert.DeserializeObject<Message>(Encoding.UTF8.GetString(data));
 
-                return (returnData,RijndaelManager.DecryptStringFromBytes(returnData.content, pwd, iv));
+                return (returnData,RijndaelManager.DecryptStringFromBytes(returnData.Content, pwd, iv));
             }
             catch (ArgumentNullException e)
             {

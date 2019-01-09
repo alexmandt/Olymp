@@ -25,93 +25,103 @@ namespace Olymp.Communication
         public void Start(Func<Message,string, (Command cmd, string unencryptedMessage)> onReceiveFunction)
         {
             TcpListener server = null;
-            try
+            while (true)
             {
-                var localAddress = IPAddress.Parse(_address);
-                server = new TcpListener(localAddress, _port);
-
-                server.Start();
-                var bytes = new byte[256];
-                while (true)
+                try
                 {
-                    var client = server.AcceptTcpClient();
-                    var stream = client.GetStream();
+                    var localAddress = IPAddress.Parse(_address);
+                    server = new TcpListener(localAddress, _port);
 
-                    int i;
-                    while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
+                    server.Start();
+                    while (true)
                     {
-                        var data = Encoding.UTF8.GetString(bytes, 0, i);
+                        var client = server.AcceptTcpClient();
+                        var stream = client.GetStream();
 
-                        #region Decrypt message
-
-                        var deserializedMessage = JsonConvert.DeserializeObject<Message>(data);
-                        var iv = new byte[16];
-                        var bytesIv = Encoding.UTF8.GetBytes(deserializedMessage.user);
-                        for (var j = 0; j < bytesIv.Length; j++)
+                        var bytes = new byte[client.ReceiveBufferSize];
+                        int i;
+                        while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
                         {
-                            iv[j] = bytesIv[j];
-                        }
+                            var data = Encoding.UTF8.GetString(bytes, 0, i);
 
-                        var pwd = new byte[32];
-                        var bytesPwd = Encoding.UTF8.GetBytes(UserRepository.Instance.GetUser(deserializedMessage.user).Password);
+                            #region Decrypt message
 
-                        for (var j = 0; j < bytesPwd.Length; j++)
-                        {
-                            pwd[j] = bytesPwd[j];
-                        }
+                            var deserializedMessage = JsonConvert.DeserializeObject<Message>(data);
+                            var iv = new byte[16];
+                            var bytesIv = Encoding.UTF8.GetBytes(deserializedMessage.User);
+                            for (var j = 0; j < bytesIv.Length; j++)
+                            {
+                                iv[j] = bytesIv[j];
+                            }
 
-                        string decryptedMessage;
-                        try
-                        {
-                            decryptedMessage = RijndaelManager.DecryptStringFromBytes(deserializedMessage.content, pwd, iv);
-                        }
-                        catch (Exception)
-                        {
-                            //ignored - Invalid encryption
-                            //Drop message - could be an attack
-                            bytes = new byte[256];
-                            client.Close();
-                            continue;
-                        }
+                            var pwd = new byte[32];
+                            var bytesPwd =
+                                Encoding.UTF8.GetBytes(UserRepository.Instance.GetUser(deserializedMessage.User)
+                                    .Password);
 
-                        #endregion
+                            for (var j = 0; j < bytesPwd.Length; j++)
+                            {
+                                pwd[j] = bytesPwd[j];
+                            }
 
-                        var responseMsg = new Message();
-                        switch (deserializedMessage.command)
-                        {
-                            #region Request node neighbour
-
-                            case Command.REQ:
-                                Info($"Node {decryptedMessage} connected!", _name);
-                                responseMsg.user = deserializedMessage.user;
-                                responseMsg.command = Command.OK;
-                                responseMsg.content = RijndaelManager.EncryptStringToBytes(_name, pwd, iv);
-                                break;
+                            string decryptedMessage;
+                            try
+                            {
+                                decryptedMessage =
+                                    RijndaelManager.DecryptStringFromBytes(deserializedMessage.Content, pwd, iv);
+                            }
+                            catch (Exception)
+                            {
+                                //ignored - Invalid encryption
+                                //Drop message - could be an attack
+                                bytes = new byte[256];
+                                client.Close();
+                                continue;
+                            }
 
                             #endregion
-                            
-                            default:
-                                responseMsg.user = deserializedMessage.user;
-                                var (command, content) = onReceiveFunction(deserializedMessage,decryptedMessage);
-                                responseMsg.command = command;
-                                responseMsg.content = RijndaelManager.EncryptStringToBytes(content, pwd, iv);
-                                break;
+
+                            var responseMsg = new Message();
+                            switch (deserializedMessage.Command)
+                            {
+                                #region Request node neighbour
+
+                                case Command.REQ:
+                                    Info($"Node {decryptedMessage} connected!", _name);
+                                    responseMsg.User = deserializedMessage.User;
+                                    responseMsg.Command = Command.OK;
+                                    responseMsg.Content = RijndaelManager.EncryptStringToBytes(_name, pwd, iv);
+                                    break;
+
+                                #endregion
+
+                                default:
+                                    responseMsg.User = deserializedMessage.User;
+                                    var (command, content) = onReceiveFunction(deserializedMessage, decryptedMessage);
+                                    responseMsg.Command = command;
+                                    responseMsg.Content = RijndaelManager.EncryptStringToBytes(content, pwd, iv);
+                                    break;
+                            }
+
+                            var msg = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(responseMsg));
+                            stream.Write(msg, 0, msg.Length);
                         }
 
-                        var msg = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(responseMsg));
-                        stream.Write(msg, 0, msg.Length);
+                        client.Close();
                     }
-                    bytes = new byte[256];
-                    client.Close();
                 }
-            }
-            catch (SocketException e)
-            {
-                Error($"SocketException: {e.Message}");
-            }
-            finally
-            {
-                server?.Stop();
+                catch (SocketException e)
+                {
+                    Error($"SocketException: {e.Message}");
+                }
+                catch (Exception e)
+                {
+                    Error($"Exception: {e.Message}"); 
+                }
+                finally
+                {
+                    server?.Stop();
+                }
             }
         }
     }
