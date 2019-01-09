@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Threading;
 using Console = Colorful.Console;
@@ -24,7 +23,7 @@ namespace Olymp
             foreach (var color in new List<Color>{Yellow,Green,Color.LightSkyBlue,Color.Fuchsia})
             {
                 Console.Clear();
-                Console.WriteAscii("Olymp", color);
+                Console.WriteAscii($"Olymp v{version}", color);
                 Console.WriteLine("A distributed compute engine that allows you to focus on your work", color);
                 Console.WriteLine();
                 Thread.Sleep(1000);

@@ -8,4 +8,8 @@
       <PackageReference Include="Colorful.Console" Version="1.2.9" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Olymp.Exceptions\Olymp.Exceptions.csproj" />
+    </ItemGroup>
+
 </Project>

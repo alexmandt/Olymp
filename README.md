@@ -13,13 +13,13 @@ $ olymp --master --name master.local --webui
 #### Run child node
 
 ```bash
-$ olymp --child --name child1.local 
+$ olymp --child 192.168.0.100:17930 --name child1.local --user admin --password admin
 ```
 
 #### Connect to master node CLI configuration
 
 ```bash
-$ olymp --configure localhost:17929
+$ olymp --configure localhost:17929 --user admin --password admin
 master.local>
 ```
 
@@ -64,6 +64,7 @@ function add(w,x,y,z){
 master.local> put master pipeline "/home/u1/add.js"
 ```
 
-### Default ports
+### Default ports (master)
 
 * Configuration: 17929
+* Child connections: 17930
