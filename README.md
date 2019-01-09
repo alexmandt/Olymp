@@ -1,6 +1,6 @@
 # 🏔️ Olymp
 
-**The simple distributed compute engine**
+## The simple distributed compute engine
 
 ### Get started
 
