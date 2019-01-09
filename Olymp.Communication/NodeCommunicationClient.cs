@@ -8,7 +8,7 @@ using static Olymp.Util.Log;
 
 namespace Olymp.Communication
 {
-    public class NodeCommunicationClient
+    public static class NodeCommunicationClient
     {
         public static (Message message, string content) Send(string server, string username, string password, string message, Command command, string name)
         {

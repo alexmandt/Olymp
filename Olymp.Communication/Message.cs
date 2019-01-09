@@ -11,6 +11,6 @@ namespace Olymp.Communication
     {
         REQ,
         OK,
-        ADD
+        CONF_ADD_USER
     }
 }

@@ -7,22 +7,20 @@ namespace Olymp.Nodes
 {
     public abstract class Node
     {
-        protected readonly Util.Configuration _configuration;
-        protected string nodeId;
+        protected readonly string Name;
         private readonly int _port;
 
         protected Node(Util.Configuration configuration, int port)
         {
-            _configuration = configuration;
             _port = port;
-            nodeId = _configuration.Name;
+            Name = configuration.Name;
         }
 
         public abstract (Command cmd, string unencryptedMessage) Handle(Message message, string unecryptedMessage);
         
         public void Start()
         {
-            var ncs = new NodeCommunicationServer("127.0.0.1",_port,nodeId);
+            var ncs = new NodeCommunicationServer("127.0.0.1", _port, Name);
             Task.Run(() =>
             {
                 ncs.Start(Handle);
