@@ -19,13 +19,13 @@ namespace Olymp
 
         private static void Title(decimal version)
         {
-            Console.Title = "AthenaDB";
+            Console.Title = "Olymp";
 
             foreach (var color in new List<Color>{Yellow,Green,Color.LightSkyBlue,Color.Fuchsia})
             {
                 Console.Clear();
-                Console.WriteAscii("AthenaDB", color);
-                Console.WriteLine("The distributed document store with data-structuring capabilities", color);
+                Console.WriteAscii("Olymp", color);
+                Console.WriteLine("A distributed compute engine that allows you to focus on your work", color);
                 Console.WriteLine();
                 Thread.Sleep(1000);
             }
