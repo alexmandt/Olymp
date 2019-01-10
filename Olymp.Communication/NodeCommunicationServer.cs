@@ -95,6 +95,17 @@ namespace Olymp.Communication
 
                                 #endregion
 
+                                #region Base commands
+
+                                case Command.OK:
+                                case Command.FAIL:
+                                    responseMsg.User = deserializedMessage.User;
+                                    responseMsg.Command = deserializedMessage.Command;
+                                    responseMsg.Content = RijndaelManager.EncryptStringToBytes(deserializedMessage.Command.ToString(), pwd, iv);
+                                    break;
+
+                                #endregion
+
                                 default:
                                     responseMsg.User = deserializedMessage.User;
                                     var (command, content) = onReceiveFunction(deserializedMessage, decryptedMessage);

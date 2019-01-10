@@ -10,9 +10,9 @@ namespace Olymp.Communication.Messages
         public string Content { get; set; }
     }
 
-    public class TargetTypes
+    public static class TargetTypes
     {
-        public static readonly string PIPELINE = "pi";
-        public static readonly string PROGRAM = "pr";
+        public const string PIPELINE = "pipeline";
+        public const string PROGRAM = "program";
     }
 }

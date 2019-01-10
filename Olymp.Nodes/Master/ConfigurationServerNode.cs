@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using Olymp.Communication;
 using Olymp.Communication.Messages;
@@ -43,6 +44,21 @@ namespace Olymp.Nodes.Master
                     {
                         return (Command.FAIL, file.TargetName);
                     }
+//                case Command.CONF_DISTRIBUTE:
+//                    //TODO
+//                    return (Command.FAIL, "NO");
+//                    break;
+//                case Command.CONF_GET_STATUS:
+//                    var status = JsonConvert.DeserializeObject<GetStatusMessage>(unencryptedMessage);
+//                    return (Command.OK, JsonConvert.SerializeObject(new GetStatusMessage
+//                    {
+//                        Target = status.Target,
+//                        Status = new List<Status>
+//                        {
+//                            new Status{Up = true, Name = "child1.local"},
+//                            new Status{Up = false, Name = "child2.local"}
+//                        }
+//                    }));
                 default:
                     return (Command.FAIL, ":(");
             }
