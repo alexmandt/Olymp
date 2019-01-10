@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -92,7 +93,7 @@ namespace Olymp.Nodes.Configuration
                     var groups = getStatus.Match(command).Groups.Select(a => a.Value).ToList();
 
                     msgCommand = Command.CONF_GET_STATUS;
-                    StatusTarget.TryParse<StatusTarget>(groups[1].First().ToString().ToUpper(), out var statusTarget);
+                    Enum.TryParse<StatusTarget>(groups[1].First().ToString().ToUpper(), out var statusTarget);
                     var getStatusMsg = new GetStatusMessage
                     {
                         Target = statusTarget,
