@@ -94,7 +94,20 @@ namespace Olymp.Nodes.Configuration
                     var groups = getStatus.Match(command).Groups.Select(a => a.Value).ToList();
 
                     msgCommand = Command.CONF_GET_STATUS;
-                    Enum.TryParse<StatusTarget>(groups[1].First().ToString().ToUpper(), out var statusTarget);
+                    var statusTarget = StatusTarget.All;
+                    switch (groups[1].First().ToString().ToUpper())
+                    {
+                        case "A":
+                            statusTarget = StatusTarget.All;
+                            break;
+                        case "N":
+                            statusTarget = StatusTarget.Nodes;
+                            break;
+                        case "S":
+                            statusTarget = StatusTarget.Self;
+                            break;
+                    }
+                    
                     var getStatusMsg = new GetStatusMessage
                     {
                         Target = statusTarget,
