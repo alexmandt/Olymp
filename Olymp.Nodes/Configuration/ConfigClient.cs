@@ -98,7 +98,7 @@ namespace Olymp.Nodes.Configuration
                     var getStatusMsg = new GetStatusMessage
                     {
                         Target = statusTarget,
-                        Status = new List<Status>()
+                        StatusInfo = new List<Status>()
                     };
                     content = getStatusMsg;
                 }
@@ -118,7 +118,7 @@ namespace Olymp.Nodes.Configuration
                             case Command.CONF_GET_STATUS:
                                 var status = JsonConvert.DeserializeObject<GetStatusMessage>(result.content);
                                 Console.WriteLine();
-                                foreach (var stat in status.Status)
+                                foreach (var stat in status.StatusInfo)
                                 {
                                     Console.WriteLine($"Name: {stat.Name}");
                                     if (stat.Up)

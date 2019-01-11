@@ -4,24 +4,21 @@ namespace Olymp.Communication.Messages
 {
     public class GetStatusMessage
     {
-        public StatusTarget Target;
-        public List<Status> Status;
+        public StatusTarget Target { get; set; }
+        public List<Status> StatusInfo { get; set; }
     }
 
     public class Status
     {
-        //TODO more info (workers, resources etc)
-        public bool Up;
-        public string Name;
+        // TODO: Add more info (workers, resources, etc...)
+        public bool Up { get; set; }
+        public string Name { get; set; }
     }
-    
+
     public enum StatusTarget
     {
-        //Self
-        S,
-        //All
-        A,
-        //Nodes
-        N
+        Self,
+        All,
+        Nodes
     }
 }
