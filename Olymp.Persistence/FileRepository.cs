@@ -15,18 +15,18 @@ namespace Olymp.Persistence
 
         private FileRepository()
         {
-            _db = new StoreContext();
+            this._db = new StoreContext();
         }
-        
+
         public void AddFile(PutMessage file)
         {
-            if (_db.Files.Any(a => a.TargetName == file.TargetName))
+            if (this._db.Files.Any(a => a.TargetName == file.TargetName))
             {
                 throw new FileExistsException(file.TargetName);
             }
 
-            _db.Files.Add(file);
-            _db.SaveChanges();
+            this._db.Files.Add(file);
+            this._db.SaveChanges();
         }
     }
 }

@@ -17,20 +17,21 @@ namespace Olymp.Persistence
 
         private UserRepository()
         {
-            _db = new StoreContext();
-            
+            this._db = new StoreContext();
+
+            // Insert an admin user on startup
             try
             {
-                GetUser("admin");
+                this.GetUser("admin");
             }
             catch (Exception)
             {
-                AddUser(new AddUserMessage{IsAdmin = true,Password = "admin",Username = "admin"});
+                this.AddUser(new AddUserMessage { IsAdmin = true, Username = "admin", Password = "admin" });
             }
         }
 
         public void AddUser(AddUserMessage newUser)
-        {   
+        {
             var user = new StoreContext.User
             {
                 Id = Guid.NewGuid().ToString(),
@@ -38,18 +39,12 @@ namespace Olymp.Persistence
                 Password = MD5Helper.CalculateMD5Hash(newUser.Password),
                 UserName = newUser.Username
             };
-            _db.Users.Add(user);
-            _db.SaveChanges();
+            this._db.Users.Add(user);
+            this._db.SaveChanges();
         }
 
-        public StoreContext.User GetUser(string username)
-        {   
-            if (_db.Users.Any(a => a.UserName == username))
-            {
-                return _db.Users.First(a => a.UserName == username);
-            }
-
-            throw new UnknownUserException(username);
-        }
+        public StoreContext.User GetUser(string username) => this._db.Users
+            .FirstOrDefault(a => a.UserName == username) ??
+                throw new UnknownUserException(username);
     }
 }
