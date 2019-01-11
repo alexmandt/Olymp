@@ -23,7 +23,7 @@ namespace Olymp.Persistence
             {
                 GetUser("admin");
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 AddUser(new AddUserMessage{IsAdmin = true,Password = "admin",Username = "admin"});
             }

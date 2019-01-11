@@ -12,7 +12,6 @@ namespace Olymp
         {
             Title(0.1M);
             var startup = new Startup(args);
-            startup.Configure();
             startup.Start();
         }
 
