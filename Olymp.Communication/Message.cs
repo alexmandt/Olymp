@@ -2,9 +2,9 @@ namespace Olymp.Communication
 {
     public struct Message
     {
-        public string User;
-        public Command Command;
-        public byte[] Content;
+        public string User { get; set; }
+        public Command Command { get; set; }
+        public byte[] Content { get; set; }
     }
 
     public enum Command

@@ -2,7 +2,7 @@ namespace Olymp.Communication.Messages
 {
     public class DistributeMessage
     {
-        public string File;
-        public string Target;
+        public string File { get; set; }
+        public string Target { get; set; }
     }
 }
