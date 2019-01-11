@@ -49,7 +49,7 @@ namespace Olymp.Communication
 
                 client = new TcpClient(server.Split(":")[0],int.Parse(server.Split(":")[1]));
                 stream = client.GetStream();
-                
+
                 stream.Write(data, 0, data.Length);
                 stream.Flush();
                 data = new byte[256];

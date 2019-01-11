@@ -6,14 +6,14 @@ namespace Olymp.Communication
         public Command Command;
         public byte[] Content;
     }
-    
+
     public enum Command
     {
         //GENERAL COMMANDS
         REQ,
         OK,
         FAIL,
-        
+
         //CONF
         CONF_ADD_USER,
         CONF_PUT_PIPELINE,

@@ -127,7 +127,7 @@ namespace Olymp.Communication
                 }
                 catch (Exception e)
                 {
-                    Error($"Exception: {e.Message}"); 
+                    Error($"Exception: {e.Message}");
                 }
                 finally
                 {
