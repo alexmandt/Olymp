@@ -1,5 +1,6 @@
 namespace Olymp.Communication
 {
+    // Will be obsolete once we introduce MessagePack
     public struct Message
     {
         public string User { get; set; }

@@ -16,27 +16,27 @@ namespace Olymp.Nodes.Configuration
     {
         private readonly Util.Configuration _configuration;
         private readonly string CONFIG = "CONFIG";
-        
+
         private readonly Regex addUser = new Regex(" *ad?d? *us?e?r? *\"(.+)\" *\"(.+)\" *(tr?u?e?|fa?l?s?e?) *", RegexOptions.Compiled);
         private readonly Regex putProgram = new Regex(" *pu?t? *pro?g?r?a?m? *\"(.+)\" *as? *\"(.+)\" *", RegexOptions.Compiled);
         private readonly Regex putPipeline = new Regex(" *pu?t? *pip?e?l?i?n?e? *\"(.+)\" *as? *\"(.+)\" *", RegexOptions.Compiled);
         private readonly Regex distribute = new Regex(" *di?s?t?r?i?b?u?t?e? *\"(.+)\" *to? *\"(.+)\" *", RegexOptions.Compiled);
         private readonly Regex getStatus = new Regex(" *ge?t? *st?a?t?u?s? *(se?l?f?|al?l?|no?d?e?s?) *", RegexOptions.Compiled);
-        
+
         public ConfigClient(Util.Configuration configuration)
         {
             _configuration = configuration;
         }
-        
+
         public void Start()
         {
-            var name = NodeCommunicationClient.Send(_configuration.ConfigurationAddress, 
+            var name = NodeCommunicationClient.Send(_configuration.ConfigurationAddress,
                 _configuration.User,
-                _configuration.Password, 
-                CONFIG, 
-                Command.REQ, 
+                _configuration.Password,
+                CONFIG,
+                Command.REQ,
                 CONFIG);
-            
+
             while (true)
             {
                 Console.Write($"{name.content}>");
@@ -65,7 +65,7 @@ namespace Olymp.Nodes.Configuration
                     var groups = isProgram
                         ? putProgram.Match(command).Groups.Select(a => a.Value).ToList()
                         : putPipeline.Match(command).Groups.Select(a => a.Value).ToList();
-                    
+
                     msgCommand = isProgram ? Command.CONF_PUT_PROGRAM : Command.CONF_PUT_PIPELINE;
                     var putMsg = new PutMessage
                     {
@@ -79,7 +79,7 @@ namespace Olymp.Nodes.Configuration
                 else if (distribute.IsMatch(command))
                 {
                     var groups = distribute.Match(command).Groups.Select(a => a.Value).ToList();
-                    
+
                     msgCommand = Command.CONF_DISTRIBUTE;
                     var distributeMsg = new DistributeMessage
                     {
