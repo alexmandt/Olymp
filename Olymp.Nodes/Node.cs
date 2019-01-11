@@ -1,11 +1,12 @@
 using System;
 using System.Threading.Tasks;
 using Olymp.Communication;
+using Olymp.Nodes.Abstractions;
 using Olymp.Util;
 
 namespace Olymp.Nodes
 {
-    public abstract class Node
+    public abstract class Node : IService
     {
         protected readonly string Name;
         private readonly int _port;
@@ -17,7 +18,7 @@ namespace Olymp.Nodes
         }
 
         public abstract (Command cmd, string unencryptedMessage) Handle(Message message, string unecryptedMessage);
-        
+
         public void Start()
         {
             var ncs = new NodeCommunicationServer("127.0.0.1", _port, Name);

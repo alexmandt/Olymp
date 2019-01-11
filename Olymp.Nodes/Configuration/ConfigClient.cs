@@ -7,11 +7,12 @@ using Microsoft.VisualBasic.CompilerServices;
 using Newtonsoft.Json;
 using Olymp.Communication;
 using Olymp.Communication.Messages;
+using Olymp.Nodes.Abstractions;
 using Console = Colorful.Console;
 
 namespace Olymp.Nodes.Configuration
 {
-    public class ConfigClient
+    public class ConfigClient : IService
     {
         private readonly Util.Configuration _configuration;
         private readonly string CONFIG = "CONFIG";
