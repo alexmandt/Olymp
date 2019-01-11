@@ -17,9 +17,8 @@ namespace Olymp.Communication.Messages
 
     public enum StatusTarget
     {
-        // Just first letters needed for parsing partially spelled commands
-        S, // Self
-        A, // All
-        N // Nodes
+        Self,
+        All,
+        Nodes
     }
 }
