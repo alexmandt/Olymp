@@ -7,10 +7,10 @@ namespace Olymp.Util
     public class ConfigurationManager
     {
         private static Regex ip = new Regex("^[^\\:]*:[^\\:]*$", RegexOptions.Compiled);
-        
+
         private static string GetValue(string[] args, ref int i)
         {
-            if (i+1 < args.Length)
+            if (i + 1 < args.Length)
             {
                 i++;
                 return args[i].Trim();
@@ -18,7 +18,7 @@ namespace Olymp.Util
 
             throw new MissingValueException(args[i]);
         }
-        
+
         public static Configuration GetConfiguration(string[] args)
         {
             var config = new Configuration();
@@ -28,9 +28,11 @@ namespace Olymp.Util
                 switch (args[i])
                 {
                     case "--master":
+                    case "-m":
                         config.Role = Role.Master;
                         break;
                     case "--child":
+                    case "-c":
                         config.Role = Role.Child;
                         config.MasterIP = GetValue(args, ref i);
                         if (!ip.IsMatch(config.MasterIP))
@@ -39,6 +41,7 @@ namespace Olymp.Util
                         }
                         break;
                     case "--configure":
+                    case "--conf":
                         config.Role = Role.ConfigClient;
                         config.ConfigurationAddress = GetValue(args, ref i);
                         if (!ip.IsMatch(config.ConfigurationAddress))
@@ -47,15 +50,20 @@ namespace Olymp.Util
                         }
                         break;
                     case "--webui":
+                    case "--web":
+                    case "-w":
                         config.WebUI = true;
                         break;
                     case "--name":
+                    case "-n":
                         config.Name = GetValue(args, ref i);
                         break;
                     case "--user":
+                    case "-u":
                         config.User = GetValue(args, ref i);
                         break;
                     case "--password":
+                    case "-p":
                         config.Password = GetValue(args, ref i);
                         break;
                     default:

@@ -6,7 +6,7 @@ namespace Olymp.Util
         Child,
         ConfigClient
     }
-    
+
     public class Configuration
     {
         public bool WebUI;
