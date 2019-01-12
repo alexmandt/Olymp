@@ -5,3 +5,5 @@ script:
   - dotnet restore
   - dotnet build
   - dotnet test
+notifications:
+  slack: olymp-workspace:qO3b5icNtQKxC3KNp3XMAnV9
