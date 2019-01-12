@@ -15,7 +15,7 @@ namespace Olymp.Nodes.Configuration
     public class ConfigurationTool : IService
     {
         private readonly Util.Configuration _configuration;
-        private readonly string CONFIG = "CONFIG";
+        private const string CONFIG = "CONFIG";
 
         private readonly Regex addUser = new Regex(" *ad?d? *us?e?r? *\"(.+)\" *\"(.+)\" *(tr?u?e?|fa?l?s?e?) *", RegexOptions.Compiled);
         private readonly Regex putProgram = new Regex(" *pu?t? *pro?g?r?a?m? *\"(.+)\" *as? *\"(.+)\" *", RegexOptions.Compiled);
@@ -25,25 +25,26 @@ namespace Olymp.Nodes.Configuration
 
         public ConfigurationTool(Util.Configuration configuration)
         {
-            _configuration = configuration;
+            this._configuration = configuration;
         }
 
         public void Start()
         {
-            var name = NodeCommunicationClient.Send(_configuration.ConfigurationAddress,
-                _configuration.User,
-                _configuration.Password,
+            var name = NodeCommunicationClient.Send(
+                this._configuration.ConfigurationAddress,
+                this._configuration.User,
+                this._configuration.Password,
                 CONFIG,
                 Command.REQ,
-                CONFIG);
+                nameof(ConfigurationTool));
 
             while (true)
             {
-                Console.Write($"{name.content}>");
+                Console.Write($"{name.content}> ");
                 var command = Console.ReadLine();
 
                 var msgCommand = Command.FAIL;
-                object content = null;
+                IMessage content = null;
 
                 //Add user
                 if (addUser.IsMatch(command))
@@ -118,39 +119,35 @@ namespace Olymp.Nodes.Configuration
 
                 if (msgCommand != Command.FAIL)
                 {
-                    var result = NodeCommunicationClient.Send(_configuration.ConfigurationAddress,
+                    var response = NodeCommunicationClient.Send(_configuration.ConfigurationAddress,
                         _configuration.User,
                         _configuration.Password,
                         JsonConvert.SerializeObject(content),
                         msgCommand,
                         CONFIG);
-                    if (result.message.Command == Command.OK)
+
+                    if (response.message.Command == Command.OK)
                     {
                         switch (msgCommand)
                         {
                             case Command.CONF_GET_STATUS:
-                                var status = JsonConvert.DeserializeObject<GetStatusMessage>(result.content);
+                                var statusMessage = JsonConvert.DeserializeObject<GetStatusMessage>(response.content);
                                 Console.WriteLine();
-                                foreach (var stat in status.StatusInfo)
-                                {
-                                    Console.WriteLine($"Name: {stat.Name}");
-                                    if (stat.Up)
-                                    {
-                                        Console.WriteLine("UP", Util.Log.Green);
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("DOWN", Util.Log.Red);
-                                    }
-                                    Console.WriteLine();
-                                }
+                                statusMessage.StatusInfo.ForEach(stat =>
+                                    Console.WriteLine(
+                                        $"{stat.Name} - " + (stat.Up ? "UP" : "DOWN") + "\n",
+                                        stat.Up ? Util.Log.Green : Util.Log.Red
+                                    )
+                                );
                                 break;
                         }
-                        Console.WriteLine("Success!", Color.Green);
+
+                        // TODO: Remove in production
+                        Console.WriteLine("All stats pulled successfully!", Color.Green);
                     }
                     else
                     {
-                        Console.WriteLine("Execution failed!", Util.Log.Red);
+                        Console.WriteLine("Execution at node failed!", Util.Log.Red);
                     }
                 }
                 else

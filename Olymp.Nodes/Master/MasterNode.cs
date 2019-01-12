@@ -8,7 +8,7 @@ namespace Olymp.Nodes.Master
         public MasterNode(Util.Configuration configuration) : base(configuration, 17930)
         {
             new ConfigurationServerNode(configuration).Start();
-            Success("Started MasterNode!",Name);
+            Success("Started MasterNode!", base._name);
         }
 
         public override (Command cmd, string unencryptedMessage) Handle(Message message, string unecryptedMessage)

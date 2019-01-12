@@ -12,7 +12,7 @@ namespace Olymp.Nodes.Master
     {
         public ConfigurationServerNode(Util.Configuration configuration) : base(configuration, 17929)
         {
-            Success("Started ConfigurationServerNode!", Name);
+            Success("Started ConfigurationServerNode!", base._name);
         }
 
         public override (Command cmd, string unencryptedMessage) Handle(Message message, string unencryptedMessage)
@@ -24,15 +24,16 @@ namespace Olymp.Nodes.Master
                     try
                     {
                         UserRepository.Instance.AddUser(addUserMsg);
-                        Success($"Added user {addUserMsg.Username}!", Name);
+                        Success($"Added user {addUserMsg.Username}!", base._name);
                         return (Command.OK, addUserMsg.Username);
                     }
                     catch (Exception)
                     {
-                        Error($"Couldn't add user {addUserMsg.Username}!", Name);
+                        Error($"Couldn't add user {addUserMsg.Username}!", base._name);
                         return (Command.FAIL, addUserMsg.Username);
                     }
                 case Command.CONF_PUT_PROGRAM:
+                    // Not implemented => default to pipeline
                 case Command.CONF_PUT_PIPELINE:
                     var file = JsonConvert.DeserializeObject<PutMessage>(unencryptedMessage);
                     try
@@ -45,22 +46,22 @@ namespace Olymp.Nodes.Master
                         return (Command.FAIL, file.TargetName);
                     }
 //                case Command.CONF_DISTRIBUTE:
-//                    //TODO
-//                    return (Command.FAIL, "NO");
+//                    // TODO: Implement a distribute command
+//                    return (Command.FAIL, "NOT IMPLEMENTED YET");
 //                    break;
 //                case Command.CONF_GET_STATUS:
 //                    var status = JsonConvert.DeserializeObject<GetStatusMessage>(unencryptedMessage);
 //                    return (Command.OK, JsonConvert.SerializeObject(new GetStatusMessage
 //                    {
 //                        Target = status.Target,
-//                        Status = new List<Status>
+//                        StatusInfo = new List<Status>
 //                        {
-//                            new Status{Up = true, Name = "child1.local"},
-//                            new Status{Up = false, Name = "child2.local"}
+//                            new Status { Up = true, Name = "child1.local" },
+//                            new Status { Up = false, Name = "child2.local" }
 //                        }
 //                    }));
                 default:
-                    return (Command.FAIL, ":(");
+                    return (Command.FAIL, "Command not recognized. Check versions compatibility. :(");
             }
         }
     }
