@@ -8,23 +8,24 @@ namespace Olymp.Nodes
 {
     public abstract class Node : IService
     {
-        protected readonly string Name;
+        protected readonly string _name;
         private readonly int _port;
+        private readonly string _localHost = "127.0.0.1";
 
         protected Node(Util.Configuration configuration, int port)
         {
-            _port = port;
-            Name = configuration.Name;
+            this._port = port;
+            this._name = configuration.Name;
         }
 
         public abstract (Command cmd, string unencryptedMessage) Handle(Message message, string unecryptedMessage);
 
         public void Start()
         {
-            var ncs = new NodeCommunicationServer("127.0.0.1", _port, Name);
+            var server = new NodeCommunicationServer(this._localHost, this._port, this._name);
             Task.Run(() =>
             {
-                ncs.Start(Handle);
+                server.Start(Handle);
             });
         }
     }
