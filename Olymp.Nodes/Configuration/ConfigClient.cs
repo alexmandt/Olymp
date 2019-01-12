@@ -12,7 +12,7 @@ using Console = Colorful.Console;
 
 namespace Olymp.Nodes.Configuration
 {
-    public class ConfigClient : IService
+    public class ConfigurationTool : IService
     {
         private readonly Util.Configuration _configuration;
         private readonly string CONFIG = "CONFIG";
@@ -23,7 +23,7 @@ namespace Olymp.Nodes.Configuration
         private readonly Regex distribute = new Regex(" *di?s?t?r?i?b?u?t?e? *\"(.+)\" *to? *\"(.+)\" *", RegexOptions.Compiled);
         private readonly Regex getStatus = new Regex(" *ge?t? *st?a?t?u?s? *(se?l?f?|al?l?|no?d?e?s?) *", RegexOptions.Compiled);
 
-        public ConfigClient(Util.Configuration configuration)
+        public ConfigurationTool(Util.Configuration configuration)
         {
             _configuration = configuration;
         }
@@ -44,7 +44,7 @@ namespace Olymp.Nodes.Configuration
 
                 var msgCommand = Command.FAIL;
                 object content = null;
-                
+
                 //Add user
                 if (addUser.IsMatch(command))
                 {
@@ -107,7 +107,7 @@ namespace Olymp.Nodes.Configuration
                             statusTarget = StatusTarget.Self;
                             break;
                     }
-                    
+
                     var getStatusMsg = new GetStatusMessage
                     {
                         Target = statusTarget,

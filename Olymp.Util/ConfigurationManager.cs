@@ -42,7 +42,7 @@ namespace Olymp.Util
                         break;
                     case "--configure":
                     case "--conf":
-                        config.Role = Role.ConfigClient;
+                        config.Role = Role.ConfigurationTool;
                         config.ConfigurationAddress = GetValue(args, ref i);
                         if (!ip.IsMatch(config.ConfigurationAddress))
                         {

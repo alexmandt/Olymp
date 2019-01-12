@@ -4,7 +4,7 @@ namespace Olymp.Util
     {
         Master,
         Child,
-        ConfigClient
+        ConfigurationTool
     }
 
     public class Configuration

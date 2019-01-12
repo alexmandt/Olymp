@@ -28,8 +28,8 @@ namespace Olymp
                     service = new MasterNode(this._configuration);
                     break;
                 // Client node creation goes here
-                case Role.ConfigClient:
-                    service = new ConfigClient(this._configuration);
+                case Role.ConfigurationTool:
+                    service = new ConfigurationTool(this._configuration);
                     break;
                 default:
                     // TODO: Log error
