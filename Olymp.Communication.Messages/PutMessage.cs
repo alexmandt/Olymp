@@ -1,10 +1,11 @@
-using System.ComponentModel.DataAnnotations;
+using MessagePack;
 
 namespace Olymp.Communication.Messages
 {
-    public class PutMessage
+    [MessagePackObject(true)]
+    public class PutMessage : IMessage
     {
-        [Key]
+        [System.ComponentModel.DataAnnotations.Key]
         public string TargetName { get; set; }
         public string TargetType { get; set; }
         public string Content { get; set; }

@@ -1,85 +1,41 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
+using Olymp.Util.Extension;
 
 namespace Olymp.Util
 {
-    public class RijndaelManager
+    public static class RijndaelManager
     {
-        public static byte[] EncryptStringToBytes(string plainText, byte[] key, byte[] iv)
+        private static readonly byte[] PEPPER = { 0x26, 0xdc, 0xff, 0x00, 0xad, 0xed, 0x7a, 0xee, 0xc5, 0xfe, 0x07, 0xaf, 0x4d, 0x08, 0x22, 0x3c };
+
+        public static byte[] Encrypt(byte[] plain, string password)
         {
-            if (plainText == null || plainText.Length <= 0)
-                throw new ArgumentNullException(nameof(plainText));
-            if (key == null || key.Length <= 0)
-                throw new ArgumentNullException(nameof(key));
-            if (iv == null || iv.Length <= 0)
-                throw new ArgumentNullException(nameof(iv));
-            byte[] encrypted;
-            using (var rijAlg = new RijndaelManaged())
-            {
-                rijAlg.BlockSize = 128;
-
-                rijAlg.Key = key;
-                rijAlg.IV = iv;
-
-                var encryptor = rijAlg.CreateEncryptor(rijAlg.Key, rijAlg.IV);
-                using (var msEncrypt = new MemoryStream())
-                {
-                    using (var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
-                    {
-                        using (var swEncrypt = new StreamWriter(csEncrypt))
-                        {
-                            swEncrypt.Write(plainText);
-                        }
-                        encrypted = msEncrypt.ToArray();
-                    }
-                }
-            }
-            return encrypted;
+            var rijndael = Rijndael.Create();
+            var pdb = new Rfc2898DeriveBytes(password, PEPPER);
+            rijndael.Key = pdb.GetBytes(32);
+            rijndael.IV = pdb.GetBytes(16);
+            rijndael.Padding = PaddingMode.PKCS7;
+            var memoryStream = new MemoryStream();
+            var cryptoStream = new CryptoStream(memoryStream, rijndael.CreateEncryptor(), CryptoStreamMode.Write);
+            cryptoStream.Write(plain, 0, plain.Length);
+            cryptoStream.Close();
+            return memoryStream.ToArray();
         }
 
-        public static string DecryptStringFromBytes(byte[] cipherText, byte[] key, byte[] iv)
+        public static byte[] Decrypt(byte[] cipher, string password)
         {
-            if (cipherText == null || cipherText.Length <= 0)
-                throw new ArgumentNullException(nameof(cipherText));
-            if (key == null || key.Length <= 0)
-                throw new ArgumentNullException(nameof(key));
-            if (iv == null || iv.Length <= 0)
-                throw new ArgumentNullException(nameof(iv));
-            string plaintext = null;
-            cipherText = Shrink(cipherText);
-
-            using (var rijAlg = new RijndaelManaged())
-            {
-                rijAlg.BlockSize = 128;
-
-                rijAlg.Key = key;
-                rijAlg.IV = iv;
-                var decryptor = rijAlg.CreateDecryptor(rijAlg.Key, rijAlg.IV);
-                using (var msDecrypt = new MemoryStream(cipherText))
-                {
-                    using (var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
-                    {
-                        using (var srDecrypt = new StreamReader(csDecrypt))
-                        {
-                            plaintext = srDecrypt.ReadToEnd();
-                        }
-                    }
-                }
-            }
-            return plaintext;
-        }
-
-        private static byte[] Shrink(byte[] packet)
-        {
-            var i = packet.Length - 1;
-            while (packet[i] == 0)
-            {
-                --i;
-            }
-            var temp = new byte[i + 1];
-            Array.Copy(packet, temp, i + 1);
-            return temp;
+            var rijndael = Rijndael.Create();
+            var pdb = new Rfc2898DeriveBytes(password, PEPPER);
+            rijndael.Key = pdb.GetBytes(32);
+            rijndael.IV = pdb.GetBytes(16);
+            rijndael.Padding = PaddingMode.PKCS7;
+            var memoryStream = new MemoryStream();
+            var cryptoStream = new CryptoStream(memoryStream, rijndael.CreateDecryptor(), CryptoStreamMode.Write);
+            cryptoStream.Write(cipher, 0, cipher.Length);
+            cryptoStream.Close();
+            return memoryStream.ToArray();
         }
     }
 }

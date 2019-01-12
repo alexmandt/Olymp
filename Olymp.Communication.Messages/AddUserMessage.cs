@@ -1,9 +1,12 @@
+using MessagePack;
+
 namespace Olymp.Communication.Messages
 {
-    public class AddUserMessage
+    [MessagePackObject(true)]
+    public class AddUserMessage : IMessage
     {
-        public string Username;
-        public string Password;
-        public bool IsAdmin;
+        public string Username { get; set; }
+        public string Password { get; set; }
+        public bool IsAdmin { get; set; }
     }
 }

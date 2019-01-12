@@ -1,49 +1,50 @@
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Microsoft.VisualBasic.CompilerServices;
-using Newtonsoft.Json;
+using MessagePack;
 using Olymp.Communication;
 using Olymp.Communication.Messages;
+using Olymp.Nodes.Abstractions;
 using Console = Colorful.Console;
 
 namespace Olymp.Nodes.Configuration
 {
-    public class ConfigClient
+    public class ConfigurationTool : IService
     {
         private readonly Util.Configuration _configuration;
-        private readonly string CONFIG = "CONFIG";
-        
+        private const string CONFIG = "CONFIG";
+
         private readonly Regex addUser = new Regex(" *ad?d? *us?e?r? *\"(.+)\" *\"(.+)\" *(tr?u?e?|fa?l?s?e?) *", RegexOptions.Compiled);
         private readonly Regex putProgram = new Regex(" *pu?t? *pro?g?r?a?m? *\"(.+)\" *as? *\"(.+)\" *", RegexOptions.Compiled);
         private readonly Regex putPipeline = new Regex(" *pu?t? *pip?e?l?i?n?e? *\"(.+)\" *as? *\"(.+)\" *", RegexOptions.Compiled);
         private readonly Regex distribute = new Regex(" *di?s?t?r?i?b?u?t?e? *\"(.+)\" *to? *\"(.+)\" *", RegexOptions.Compiled);
         private readonly Regex getStatus = new Regex(" *ge?t? *st?a?t?u?s? *(se?l?f?|al?l?|no?d?e?s?) *", RegexOptions.Compiled);
-        
-        public ConfigClient(Util.Configuration configuration)
+
+        public ConfigurationTool(Util.Configuration configuration)
         {
-            _configuration = configuration;
+            this._configuration = configuration;
         }
-        
+
         public void Start()
         {
-            var name = NodeCommunicationClient.Send(_configuration.ConfigurationAddress, 
-                _configuration.User,
-                _configuration.Password, 
-                CONFIG, 
-                Command.REQ, 
-                CONFIG);
+            var name = MessagePackSerializer.Deserialize<SingleValueMessage>(NodeCommunicationClient.Send(
+                this._configuration.ConfigurationAddress,
+                this._configuration.User,
+                this._configuration.Password,
+                new SingleValueMessage{ Value = CONFIG },
+                Command.REQ,
+                nameof(ConfigurationTool)).content).Value;
+            name = name.Substring(0, name.Length - 4);
             
             while (true)
             {
-                Console.Write($"{name.content}>");
+                Console.Write($"{name}> ");
                 var command = Console.ReadLine();
 
                 var msgCommand = Command.FAIL;
-                object content = null;
-                
+                IMessage content = null;
+
                 //Add user
                 if (addUser.IsMatch(command))
                 {
@@ -64,7 +65,7 @@ namespace Olymp.Nodes.Configuration
                     var groups = isProgram
                         ? putProgram.Match(command).Groups.Select(a => a.Value).ToList()
                         : putPipeline.Match(command).Groups.Select(a => a.Value).ToList();
-                    
+
                     msgCommand = isProgram ? Command.CONF_PUT_PROGRAM : Command.CONF_PUT_PIPELINE;
                     var putMsg = new PutMessage
                     {
@@ -78,7 +79,7 @@ namespace Olymp.Nodes.Configuration
                 else if (distribute.IsMatch(command))
                 {
                     var groups = distribute.Match(command).Groups.Select(a => a.Value).ToList();
-                    
+
                     msgCommand = Command.CONF_DISTRIBUTE;
                     var distributeMsg = new DistributeMessage
                     {
@@ -93,50 +94,55 @@ namespace Olymp.Nodes.Configuration
                     var groups = getStatus.Match(command).Groups.Select(a => a.Value).ToList();
 
                     msgCommand = Command.CONF_GET_STATUS;
-                    Enum.TryParse<StatusTarget>(groups[1].First().ToString().ToUpper(), out var statusTarget);
+                    var statusTarget = StatusTarget.All;
+                    switch (groups[1].First().ToString().ToUpper())
+                    {
+                        case "A":
+                            statusTarget = StatusTarget.All;
+                            break;
+                        case "N":
+                            statusTarget = StatusTarget.Nodes;
+                            break;
+                        case "S":
+                            statusTarget = StatusTarget.Self;
+                            break;
+                    }
+
                     var getStatusMsg = new GetStatusMessage
                     {
                         Target = statusTarget,
-                        Status = new List<Status>()
+                        StatusInfo = new List<Status>()
                     };
                     content = getStatusMsg;
                 }
 
                 if (msgCommand != Command.FAIL)
                 {
-                    var result = NodeCommunicationClient.Send(_configuration.ConfigurationAddress,
+                    var response = NodeCommunicationClient.Send(_configuration.ConfigurationAddress,
                         _configuration.User,
                         _configuration.Password,
-                        JsonConvert.SerializeObject(content),
+                        content,
                         msgCommand,
                         CONFIG);
-                    if (result.message.Command == Command.OK)
+
+                    if (response.message.Command == Command.OK)
                     {
                         switch (msgCommand)
                         {
                             case Command.CONF_GET_STATUS:
-                                var status = JsonConvert.DeserializeObject<GetStatusMessage>(result.content);
+                                var statusMessage = MessagePackSerializer.Deserialize<GetStatusMessage>(response.content);
                                 Console.WriteLine();
-                                foreach (var stat in status.Status)
+                                statusMessage.StatusInfo.ForEach(stat =>
                                 {
-                                    Console.WriteLine($"Name: {stat.Name}");
-                                    if (stat.Up)
-                                    {
-                                        Console.WriteLine("UP", Util.Log.Green);
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("DOWN", Util.Log.Red);
-                                    }
-                                    Console.WriteLine();
-                                }
+                                    Console.WriteLine($"{stat.Name}");
+                                    Console.WriteLine($"{stat.Name} - " + (stat.Up ? "UP" : "DOWN") + "\n", stat.Up ? Util.Log.Green : Util.Log.Red);
+                                });
                                 break;
                         }
-                        Console.WriteLine("Success!", Color.Green);
                     }
                     else
                     {
-                        Console.WriteLine("Execution failed!", Util.Log.Red);
+                        Console.WriteLine($"Execution at node failed!:\n{MessagePackSerializer.Deserialize<SingleValueMessage>(response.content).Value}", Util.Log.Red);
                     }
                 }
                 else

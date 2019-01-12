@@ -17,39 +17,37 @@ namespace Olymp.Persistence
 
         private UserRepository()
         {
-            _db = new StoreContext();
-            
+            this._db = new StoreContext();
+
+            // Insert an admin user on startup
             try
             {
-                GetUser("admin");
+                this.GetUser("admin");
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                AddUser(new AddUserMessage{IsAdmin = true,Password = "admin",Username = "admin"});
+                this.AddUser(new AddUserMessage { IsAdmin = true, Username = "admin", Password = "admin" });
             }
         }
 
         public void AddUser(AddUserMessage newUser)
-        {   
-            var user = new StoreContext.User
+        {
+            var user = this.ConvertToUser(newUser);
+            this._db.Users.Add(user);
+            this._db.SaveChanges();
+        }
+
+        public StoreContext.User GetUser(string username) => this._db.Users
+            .FirstOrDefault(a => a.UserName == username) ??
+                throw new UnknownUserException(username);
+
+        private StoreContext.User ConvertToUser(AddUserMessage newUserMessage) =>
+            new StoreContext.User
             {
                 Id = Guid.NewGuid().ToString(),
-                IsAdmin = newUser.IsAdmin,
-                Password = MD5Helper.CalculateMD5Hash(newUser.Password),
-                UserName = newUser.Username
+                IsAdmin = newUserMessage.IsAdmin,
+                Password = MD5Helper.CalculateMD5Hash(newUserMessage.Password),
+                UserName = newUserMessage.Username
             };
-            _db.Users.Add(user);
-            _db.SaveChanges();
-        }
-
-        public StoreContext.User GetUser(string username)
-        {   
-            if (_db.Users.Any(a => a.UserName == username))
-            {
-                return _db.Users.First(a => a.UserName == username);
-            }
-
-            throw new UnknownUserException(username);
-        }
     }
 }

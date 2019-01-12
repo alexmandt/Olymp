@@ -1,8 +1,10 @@
 using System;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using Newtonsoft.Json;
+using MessagePack;
+using Olymp.Communication.Messages;
 using Olymp.Persistence;
 using Olymp.Util;
 using static Olymp.Util.Log;
@@ -14,68 +16,60 @@ namespace Olymp.Communication
         private readonly string _address;
         private readonly int _port;
         private readonly string _name;
-
-        public NodeCommunicationServer(string address, int port,string name)
+        private bool printStart = false;
+        
+        public NodeCommunicationServer(string address, int port, string name)
         {
-            _address = address;
-            _port = port;
-            _name = name;
+            this._address = address;
+            this._port = port;
+            this._name = name;
         }
 
-        public void Start(Func<Message,string, (Command cmd, string unencryptedMessage)> onReceiveFunction)
+        public void Start(Func<Message, byte[], (Command cmd, IMessage unencryptedMessage)> onReceiveFunction)
         {
             TcpListener server = null;
             while (true)
             {
                 try
                 {
-                    var localAddress = IPAddress.Parse(_address);
-                    server = new TcpListener(localAddress, _port);
+                    var localAddress = IPAddress.Parse(this._address);
+                    server = new TcpListener(localAddress, this._port);
 
                     server.Start();
+
+                    if (printStart)
+                    {
+                        Info("Server restarted!",_name);
+                        printStart = false;
+                    }
+                    
                     while (true)
                     {
                         var client = server.AcceptTcpClient();
                         var stream = client.GetStream();
 
                         var bytes = new byte[client.ReceiveBufferSize];
-                        int i;
-                        while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
+                        while (stream.Read(bytes, 0, bytes.Length) != 0)
                         {
-                            var data = Encoding.UTF8.GetString(bytes, 0, i);
-
                             #region Decrypt message
 
-                            var deserializedMessage = JsonConvert.DeserializeObject<Message>(data);
-                            var iv = new byte[16];
-                            var bytesIv = Encoding.UTF8.GetBytes(deserializedMessage.User);
-                            for (var j = 0; j < bytesIv.Length; j++)
-                            {
-                                iv[j] = bytesIv[j];
-                            }
+                            var deserializedMessage = MessagePackSerializer.Deserialize<Message>(bytes);
+                            var pwd = UserRepository.Instance.GetUser(deserializedMessage.User).Password;
 
-                            var pwd = new byte[32];
-                            var bytesPwd =
-                                Encoding.UTF8.GetBytes(UserRepository.Instance.GetUser(deserializedMessage.User)
-                                    .Password);
-
-                            for (var j = 0; j < bytesPwd.Length; j++)
-                            {
-                                pwd[j] = bytesPwd[j];
-                            }
-
-                            string decryptedMessage;
+                            byte[] decryptedMessage;
                             try
                             {
-                                decryptedMessage =
-                                    RijndaelManager.DecryptStringFromBytes(deserializedMessage.Content, pwd, iv);
+                                decryptedMessage = RijndaelManager.Decrypt(deserializedMessage.Content, pwd);
                             }
-                            catch (Exception)
+                            catch (Exception e)
                             {
                                 //ignored - Invalid encryption
                                 //Drop message - could be an attack
                                 bytes = new byte[256];
                                 client.Close();
+                                // If you continue the client will try to receive more bytes, but since it is closed it'll throw an Exception
+                                // Instead throw an exception that decryption failed, which will be handled by the outer try-catch block
+                                // and the error will be logged
                                 continue;
                             }
 
@@ -87,10 +81,11 @@ namespace Olymp.Communication
                                 #region Request node neighbour
 
                                 case Command.REQ:
-                                    Info($"Node {decryptedMessage} connected!", _name);
+                                    Info($"Node {MessagePackSerializer.Deserialize<SingleValueMessage>(decryptedMessage).Value} connected!", _name);
                                     responseMsg.User = deserializedMessage.User;
                                     responseMsg.Command = Command.OK;
-                                    responseMsg.Content = RijndaelManager.EncryptStringToBytes(_name, pwd, iv);
+                                    var b = MessagePackSerializer.Serialize(new SingleValueMessage {Value = _name});
+                                    responseMsg.Content = RijndaelManager.Encrypt(b, pwd);
                                     break;
 
                                 #endregion
@@ -99,22 +94,20 @@ namespace Olymp.Communication
 
                                 case Command.OK:
                                 case Command.FAIL:
-                                    responseMsg.User = deserializedMessage.User;
-                                    responseMsg.Command = deserializedMessage.Command;
-                                    responseMsg.Content = RijndaelManager.EncryptStringToBytes(deserializedMessage.Command.ToString(), pwd, iv);
+                                    responseMsg = deserializedMessage;
                                     break;
 
                                 #endregion
 
                                 default:
                                     responseMsg.User = deserializedMessage.User;
-                                    var (command, content) = onReceiveFunction(deserializedMessage, decryptedMessage);
+                                    (var command, object content) = onReceiveFunction(deserializedMessage, decryptedMessage);
                                     responseMsg.Command = command;
-                                    responseMsg.Content = RijndaelManager.EncryptStringToBytes(content, pwd, iv);
+                                    responseMsg.Content = RijndaelManager.Encrypt(MessagePackSerializer.Serialize(content), pwd);
                                     break;
                             }
 
-                            var msg = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(responseMsg));
+                            var msg = MessagePackSerializer.Serialize(responseMsg);
                             stream.Write(msg, 0, msg.Length);
                         }
 
@@ -123,16 +116,23 @@ namespace Olymp.Communication
                 }
                 catch (SocketException e)
                 {
-                    Error($"SocketException: {e.Message}");
+                    restart(e);
                 }
                 catch (Exception e)
                 {
-                    Error($"Exception: {e.Message}"); 
+                    restart(e);
                 }
                 finally
                 {
                     server?.Stop();
                 }
+            }
+
+            void restart(Exception e)
+            {
+                Error($"Exception: {e.Message}", _name);
+                Info("Restarting server...", _name);
+                printStart = true;
             }
         }
     }

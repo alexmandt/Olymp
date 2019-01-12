@@ -1,8 +1,11 @@
+using MessagePack;
+
 namespace Olymp.Communication.Messages
 {
-    public class DistributeMessage
+    [MessagePackObject(true)]
+    public class DistributeMessage : IMessage
     {
-        public string File;
-        public string Target;
+        public string File { get; set; }
+        public string Target { get; set; }
     }
 }
