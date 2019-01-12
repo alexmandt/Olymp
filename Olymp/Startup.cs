@@ -32,7 +32,7 @@ namespace Olymp
                     service = new ConfigurationTool(this._configuration);
                     break;
                 default:
-                    // TODO: Log error
+                    Log.Error("No role was specified for the node", this._configuration.Name);
                     return;
             }
 

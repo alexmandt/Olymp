@@ -13,37 +13,11 @@ namespace Olymp.Communication
         public static (Message message, string content) Send(string server, string username, string password, string message, Command command, string name)
         {
             TcpClient client = null;
-            Stream stream = null;
+            NetworkStream stream = null;
 
             try
             {
-                #region Encrypt message
-
-                password = MD5Helper.CalculateMD5Hash(password);
-
-                var iv = new byte[16];
-                var bytesiv = Encoding.UTF8.GetBytes(username);
-                for (var i = 0; i < bytesiv.Length; i++)
-                {
-                    iv[i] = bytesiv[i];
-                }
-
-                var pwd = new byte[32];
-                var bytespwd = Encoding.UTF8.GetBytes(password);
-
-                for (var i = 0; i < bytespwd.Length; i++)
-                {
-                    pwd[i] = bytespwd[i];
-                }
-
-                var msg = JsonConvert.SerializeObject(new Message
-                {
-                    User = username,
-                    Command = command,
-                    Content = RijndaelManager.EncryptStringToBytes(message, pwd, iv)
-                });
-
-                #endregion
+                var (msg, iv, pwd) = EncryptMessage(username, password, message, command);
 
                 var data = Encoding.UTF8.GetBytes(msg);
 
@@ -74,6 +48,33 @@ namespace Olymp.Communication
                 stream?.Close();
                 client?.Close();
             }
+        }
+
+        private static (string msg, byte[] pwd, byte[] iv) EncryptMessage(string username, string password, string message, Command command)
+        {
+            password = MD5Helper.CalculateMD5Hash(password);
+
+            var iv = new byte[16];
+            var bytesiv = Encoding.UTF8.GetBytes(username);
+            for (var i = 0; i < bytesiv.Length; i++)
+            {
+                iv[i] = bytesiv[i];
+            }
+
+            var pwd = new byte[32];
+            var bytespwd = Encoding.UTF8.GetBytes(password);
+
+            for (var i = 0; i < bytespwd.Length; i++)
+            {
+                pwd[i] = bytespwd[i];
+            }
+
+            return (JsonConvert.SerializeObject(new Message
+            {
+                User = username,
+                Command = command,
+                Content = RijndaelManager.EncryptStringToBytes(message, pwd, iv)
+            }), pwd, iv);
         }
     }
 }

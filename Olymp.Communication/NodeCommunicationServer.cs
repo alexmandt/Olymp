@@ -15,22 +15,22 @@ namespace Olymp.Communication
         private readonly int _port;
         private readonly string _name;
 
-        public NodeCommunicationServer(string address, int port,string name)
+        public NodeCommunicationServer(string address, int port, string name)
         {
-            _address = address;
-            _port = port;
-            _name = name;
+            this._address = address;
+            this._port = port;
+            this._name = name;
         }
 
-        public void Start(Func<Message,string, (Command cmd, string unencryptedMessage)> onReceiveFunction)
+        public void Start(Func<Message, string, (Command cmd, string unencryptedMessage)> onReceiveFunction)
         {
             TcpListener server = null;
             while (true)
             {
                 try
                 {
-                    var localAddress = IPAddress.Parse(_address);
-                    server = new TcpListener(localAddress, _port);
+                    var localAddress = IPAddress.Parse(this._address);
+                    server = new TcpListener(localAddress, this._port);
 
                     server.Start();
                     while (true)
@@ -76,6 +76,9 @@ namespace Olymp.Communication
                                 //Drop message - could be an attack
                                 bytes = new byte[256];
                                 client.Close();
+                                // If you continue the client will try to receive more bytes, but since it is closed it'll throw an Exception
+                                // Instead throw an exception that decryption failed, which will be handled by the outer try-catch block
+                                // and the error will be logged
                                 continue;
                             }
 
@@ -99,9 +102,7 @@ namespace Olymp.Communication
 
                                 case Command.OK:
                                 case Command.FAIL:
-                                    responseMsg.User = deserializedMessage.User;
-                                    responseMsg.Command = deserializedMessage.Command;
-                                    responseMsg.Content = RijndaelManager.EncryptStringToBytes(deserializedMessage.Command.ToString(), pwd, iv);
+                                    responseMsg = deserializedMessage;
                                     break;
 
                                 #endregion
