@@ -1,4 +1,5 @@
 using Olymp.Communication;
+using Olymp.Communication.Messages;
 using static Olymp.Util.Log;
 
 namespace Olymp.Nodes.Master
@@ -11,7 +12,7 @@ namespace Olymp.Nodes.Master
             Success("Started MasterNode!", base._name);
         }
 
-        public override (Command cmd, string unencryptedMessage) Handle(Message message, string unecryptedMessage)
+        protected override (Command cmd, IMessage unencryptedMessage) Handle(Message message, byte[] unencryptedMessage)
         {
             throw new System.NotImplementedException();
         }

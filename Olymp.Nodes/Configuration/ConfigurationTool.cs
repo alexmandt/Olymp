@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Microsoft.VisualBasic.CompilerServices;
-using Newtonsoft.Json;
+using MessagePack;
 using Olymp.Communication;
 using Olymp.Communication.Messages;
 using Olymp.Nodes.Abstractions;
@@ -30,17 +28,18 @@ namespace Olymp.Nodes.Configuration
 
         public void Start()
         {
-            var name = NodeCommunicationClient.Send(
+            var name = MessagePackSerializer.Deserialize<SingleValueMessage>(NodeCommunicationClient.Send(
                 this._configuration.ConfigurationAddress,
                 this._configuration.User,
                 this._configuration.Password,
-                CONFIG,
+                new SingleValueMessage{ Value = CONFIG },
                 Command.REQ,
-                nameof(ConfigurationTool));
-
+                nameof(ConfigurationTool)).content).Value;
+            name = name.Substring(0, name.Length - 4);
+            
             while (true)
             {
-                Console.Write($"{name.content}> ");
+                Console.Write($"{name}> ");
                 var command = Console.ReadLine();
 
                 var msgCommand = Command.FAIL;
@@ -122,7 +121,7 @@ namespace Olymp.Nodes.Configuration
                     var response = NodeCommunicationClient.Send(_configuration.ConfigurationAddress,
                         _configuration.User,
                         _configuration.Password,
-                        JsonConvert.SerializeObject(content),
+                        content,
                         msgCommand,
                         CONFIG);
 
@@ -131,23 +130,19 @@ namespace Olymp.Nodes.Configuration
                         switch (msgCommand)
                         {
                             case Command.CONF_GET_STATUS:
-                                var statusMessage = JsonConvert.DeserializeObject<GetStatusMessage>(response.content);
+                                var statusMessage = MessagePackSerializer.Deserialize<GetStatusMessage>(response.content);
                                 Console.WriteLine();
                                 statusMessage.StatusInfo.ForEach(stat =>
-                                    Console.WriteLine(
-                                        $"{stat.Name} - " + (stat.Up ? "UP" : "DOWN") + "\n",
-                                        stat.Up ? Util.Log.Green : Util.Log.Red
-                                    )
-                                );
+                                {
+                                    Console.WriteLine($"{stat.Name}");
+                                    Console.WriteLine($"{stat.Name} - " + (stat.Up ? "UP" : "DOWN") + "\n", stat.Up ? Util.Log.Green : Util.Log.Red);
+                                });
                                 break;
                         }
-
-                        // TODO: Remove in production
-                        Console.WriteLine("All stats pulled successfully!", Color.Green);
                     }
                     else
                     {
-                        Console.WriteLine("Execution at node failed!", Util.Log.Red);
+                        Console.WriteLine($"Execution at node failed!:\n{MessagePackSerializer.Deserialize<SingleValueMessage>(response.content).Value}", Util.Log.Red);
                     }
                 }
                 else

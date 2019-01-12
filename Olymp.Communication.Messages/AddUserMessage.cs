@@ -1,5 +1,8 @@
+using MessagePack;
+
 namespace Olymp.Communication.Messages
 {
+    [MessagePackObject(true)]
     public class AddUserMessage : IMessage
     {
         public string Username { get; set; }

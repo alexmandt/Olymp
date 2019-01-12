@@ -30,9 +30,9 @@ namespace Olymp
             {
                 Console.Clear();
                 Console.WriteAscii($"Olymp v{version}", color);
-                Console.WriteLine("A distributed compute engine that allows you to focus on your work", color);
+                Console.WriteLine("The simple distributed compute engine", color);
                 Console.WriteLine();
-                await Task.Delay(1000);
+                await Task.Delay(500);
             }
         }
     }
