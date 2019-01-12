@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Olymp.Communication.Messages
 {
-    public class PutMessage
+    public class PutMessage : IMessage
     {
         [Key]
         public string TargetName { get; set; }

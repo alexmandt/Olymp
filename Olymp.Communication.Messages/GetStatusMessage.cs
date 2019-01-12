@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Olymp.Communication.Messages
 {
-    public class GetStatusMessage
+    public class GetStatusMessage : IMessage
     {
         public StatusTarget Target { get; set; }
         public List<Status> StatusInfo { get; set; }
