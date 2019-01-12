@@ -32,13 +32,7 @@ namespace Olymp.Persistence
 
         public void AddUser(AddUserMessage newUser)
         {
-            var user = new StoreContext.User
-            {
-                Id = Guid.NewGuid().ToString(),
-                IsAdmin = newUser.IsAdmin,
-                Password = MD5Helper.CalculateMD5Hash(newUser.Password),
-                UserName = newUser.Username
-            };
+            var user = this.ConvertToUser(newUser);
             this._db.Users.Add(user);
             this._db.SaveChanges();
         }
@@ -46,5 +40,14 @@ namespace Olymp.Persistence
         public StoreContext.User GetUser(string username) => this._db.Users
             .FirstOrDefault(a => a.UserName == username) ??
                 throw new UnknownUserException(username);
+
+        private StoreContext.User ConvertToUser(AddUserMessage newUserMessage) =>
+            new StoreContext.User
+            {
+                Id = Guid.NewGuid().ToString(),
+                IsAdmin = newUserMessage.IsAdmin,
+                Password = MD5Helper.CalculateMD5Hash(newUserMessage.Password),
+                UserName = newUserMessage.Username
+            };
     }
 }
