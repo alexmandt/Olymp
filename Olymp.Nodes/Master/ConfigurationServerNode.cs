@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using MessagePack;
 using Olymp.Communication;
 using Olymp.Communication.Messages;
@@ -12,8 +11,8 @@ namespace Olymp.Nodes.Master
     {
         public ConfigurationServerNode(Util.Configuration configuration) : base(configuration, 17929)
         {
-            base._name = base._name + ".cfg";
-            Success("Started ConfigurationServer", base._name);
+            _name = _name + ".cfg";
+            Success("Started ConfigurationServer", _name);
         }
 
         protected override (Command cmd, IMessage unencryptedMessage) Handle(Message message, byte[] unencryptedMessage)
@@ -25,26 +24,26 @@ namespace Olymp.Nodes.Master
                     try
                     {
                         UserRepository.Instance.AddUser(addUserMsg);
-                        Success($"Added user {addUserMsg.Username}!", base._name);
-                        return (Command.OK, new SingleValueMessage { Value = addUserMsg.Username });
+                        Success($"Added user {addUserMsg.Username}!", _name);
+                        return (Command.OK, new SingleValueMessage {Value = addUserMsg.Username});
                     }
                     catch (Exception)
                     {
-                        Error($"Couldn't add user {addUserMsg.Username}!", base._name);
-                        return (Command.FAIL, new SingleValueMessage { Value = addUserMsg.Username });
+                        Error($"Couldn't add user {addUserMsg.Username}!", _name);
+                        return (Command.FAIL, new SingleValueMessage {Value = addUserMsg.Username});
                     }
                 case Command.CONF_PUT_PROGRAM:
-                    // Not implemented => default to pipeline
+                // Not implemented => default to pipeline
                 case Command.CONF_PUT_PIPELINE:
                     var file = MessagePackSerializer.Deserialize<PutMessage>(unencryptedMessage);
                     try
                     {
                         FileRepository.Instance.AddFile(file);
-                        return (Command.OK, new SingleValueMessage { Value = file.TargetName });
+                        return (Command.OK, new SingleValueMessage {Value = file.TargetName});
                     }
                     catch (Exception)
                     {
-                        return (Command.FAIL, new SingleValueMessage { Value = file.TargetName });
+                        return (Command.FAIL, new SingleValueMessage {Value = file.TargetName});
                     }
 //                case Command.CONF_DISTRIBUTE:
 //                    // TODO: Implement a distribute command
@@ -62,7 +61,8 @@ namespace Olymp.Nodes.Master
 //                        }
 //                    });
                 default:
-                    return (Command.FAIL, new SingleValueMessage { Value = "Command not recognized. Check versions compatibility. :(" });
+                    return (Command.FAIL,
+                        new SingleValueMessage {Value = "Command not recognized. Check versions compatibility. :("});
             }
         }
     }

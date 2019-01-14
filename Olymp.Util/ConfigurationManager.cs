@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Text.RegularExpressions;
 using Olymp.Exceptions;
 
@@ -6,7 +5,7 @@ namespace Olymp.Util
 {
     public class ConfigurationManager
     {
-        private static Regex ip = new Regex("^[^\\:]*:[^\\:]*$", RegexOptions.Compiled);
+        private static readonly Regex ip = new Regex("^[^\\:]*:[^\\:]*$", RegexOptions.Compiled);
 
         private static string GetValue(string[] args, ref int i)
         {
@@ -24,7 +23,6 @@ namespace Olymp.Util
             var config = new Configuration();
 
             for (var i = 0; i < args.Length; i++)
-            {
                 switch (args[i])
                 {
                     case "--master":
@@ -35,19 +33,14 @@ namespace Olymp.Util
                     case "-c":
                         config.Role = Role.Child;
                         config.MasterIP = GetValue(args, ref i);
-                        if (!ip.IsMatch(config.MasterIP))
-                        {
-                            throw new InvalidIpException(config.MasterIP);
-                        }
+                        if (!ip.IsMatch(config.MasterIP)) throw new InvalidIpException(config.MasterIP);
                         break;
                     case "--configure":
                     case "--conf":
                         config.Role = Role.ConfigurationTool;
                         config.ConfigurationAddress = GetValue(args, ref i);
                         if (!ip.IsMatch(config.ConfigurationAddress))
-                        {
                             throw new InvalidIpException(config.ConfigurationAddress);
-                        }
                         break;
                     case "--webui":
                     case "--web":
@@ -69,7 +62,6 @@ namespace Olymp.Util
                     default:
                         throw new UnknownArgumentException(args[i]);
                 }
-            }
 
             return config;
         }

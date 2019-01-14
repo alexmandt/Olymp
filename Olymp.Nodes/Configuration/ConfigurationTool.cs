@@ -1,42 +1,53 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Colorful;
 using MessagePack;
 using Olymp.Communication;
 using Olymp.Communication.Messages;
 using Olymp.Nodes.Abstractions;
-using Console = Colorful.Console;
+using Olymp.Util;
 
 namespace Olymp.Nodes.Configuration
 {
     public class ConfigurationTool : IService
     {
-        private readonly Util.Configuration _configuration;
         private const string CONFIG = "CONFIG";
+        private readonly Util.Configuration _configuration;
 
-        private readonly Regex addUser = new Regex(" *ad?d? *us?e?r? *\"(.+)\" *\"(.+)\" *(tr?u?e?|fa?l?s?e?) *", RegexOptions.Compiled);
-        private readonly Regex putProgram = new Regex(" *pu?t? *pro?g?r?a?m? *\"(.+)\" *as? *\"(.+)\" *", RegexOptions.Compiled);
-        private readonly Regex putPipeline = new Regex(" *pu?t? *pip?e?l?i?n?e? *\"(.+)\" *as? *\"(.+)\" *", RegexOptions.Compiled);
-        private readonly Regex distribute = new Regex(" *di?s?t?r?i?b?u?t?e? *\"(.+)\" *to? *\"(.+)\" *", RegexOptions.Compiled);
-        private readonly Regex getStatus = new Regex(" *ge?t? *st?a?t?u?s? *(se?l?f?|al?l?|no?d?e?s?) *", RegexOptions.Compiled);
+        private readonly Regex addUser = new Regex(" *ad?d? *us?e?r? *\"(.+)\" *\"(.+)\" *(tr?u?e?|fa?l?s?e?) *",
+            RegexOptions.Compiled);
+
+        private readonly Regex distribute =
+            new Regex(" *di?s?t?r?i?b?u?t?e? *\"(.+)\" *to? *\"(.+)\" *", RegexOptions.Compiled);
+
+        private readonly Regex getStatus =
+            new Regex(" *ge?t? *st?a?t?u?s? *(se?l?f?|al?l?|no?d?e?s?) *", RegexOptions.Compiled);
+
+        private readonly Regex putPipeline =
+            new Regex(" *pu?t? *pip?e?l?i?n?e? *\"(.+)\" *as? *\"(.+)\" *", RegexOptions.Compiled);
+
+        private readonly Regex putProgram =
+            new Regex(" *pu?t? *pro?g?r?a?m? *\"(.+)\" *as? *\"(.+)\" *", RegexOptions.Compiled);
 
         public ConfigurationTool(Util.Configuration configuration)
         {
-            this._configuration = configuration;
+            _configuration = configuration;
         }
 
         public void Start()
         {
-            var name = MessagePackSerializer.Deserialize<SingleValueMessage>(NodeCommunicationClient.Send(
-                this._configuration.ConfigurationAddress,
-                this._configuration.User,
-                this._configuration.Password,
-                new SingleValueMessage{ Value = CONFIG },
+            var returnedData = NodeCommunicationClient.Send(
+                _configuration.ConfigurationAddress,
+                _configuration.User,
+                _configuration.Password,
+                new SingleValueMessage {Value = CONFIG},
                 Command.REQ,
-                nameof(ConfigurationTool)).content).Value;
+                nameof(ConfigurationTool));
+
+            var name = MessagePackSerializer.Deserialize<SingleValueMessage>(returnedData.Content).Value;
             name = name.Substring(0, name.Length - 4);
-            
+
             while (true)
             {
                 Console.Write($"{name}> ");
@@ -51,14 +62,14 @@ namespace Olymp.Nodes.Configuration
                     var groups = addUser.Match(command).Groups.Select(a => a.Value).ToList();
                     var addUserMsg = new AddUserMessage
                     {
-                        IsAdmin =  groups[3].First() == 't',
+                        IsAdmin = groups[3].First() == 't',
                         Username = groups[1],
                         Password = groups[2]
                     };
                     content = addUserMsg;
                 }
                 //Upload file
-                else if(putProgram.IsMatch(command) || putPipeline.IsMatch(command))
+                else if (putProgram.IsMatch(command) || putPipeline.IsMatch(command))
                 {
                     var isProgram = putProgram.IsMatch(command);
 
@@ -71,7 +82,7 @@ namespace Olymp.Nodes.Configuration
                     {
                         TargetName = groups[2],
                         TargetType = isProgram ? TargetTypes.PROGRAM : TargetTypes.PIPELINE,
-                        Content = Util.FileHelper.ReadHexString(groups[1])
+                        Content = FileHelper.ReadHexString(groups[1])
                     };
                     content = putMsg;
                 }
@@ -118,36 +129,37 @@ namespace Olymp.Nodes.Configuration
 
                 if (msgCommand != Command.FAIL)
                 {
-                    var response = NodeCommunicationClient.Send(_configuration.ConfigurationAddress,
+                    var response = NodeCommunicationClient.Send(
+                        _configuration.ConfigurationAddress,
                         _configuration.User,
                         _configuration.Password,
                         content,
                         msgCommand,
                         CONFIG);
 
-                    if (response.message.Command == Command.OK)
-                    {
+                    if (response.Message.Command == Command.OK)
                         switch (msgCommand)
                         {
                             case Command.CONF_GET_STATUS:
-                                var statusMessage = MessagePackSerializer.Deserialize<GetStatusMessage>(response.content);
+                                var statusMessage =
+                                    MessagePackSerializer.Deserialize<GetStatusMessage>(response.Content);
                                 Console.WriteLine();
                                 statusMessage.StatusInfo.ForEach(stat =>
                                 {
                                     Console.WriteLine($"{stat.Name}");
-                                    Console.WriteLine($"{stat.Name} - " + (stat.Up ? "UP" : "DOWN") + "\n", stat.Up ? Util.Log.Green : Util.Log.Red);
+                                    Console.WriteLine($"{stat.Name} - " + (stat.Up ? "UP" : "DOWN") + "\n",
+                                        stat.Up ? Log.Green : Log.Red);
                                 });
                                 break;
                         }
-                    }
                     else
-                    {
-                        Console.WriteLine($"Execution at node failed!:\n{MessagePackSerializer.Deserialize<SingleValueMessage>(response.content).Value}", Util.Log.Red);
-                    }
+                        Console.WriteLine(
+                            $"Execution at node failed!:\n{MessagePackSerializer.Deserialize<SingleValueMessage>(response.Content).Value}",
+                            Log.Red);
                 }
                 else
                 {
-                    Console.WriteLine($"Unknown command: {command}!", Util.Log.Red);
+                    Console.WriteLine($"Unknown command: {command}!", Log.Red);
                 }
             }
         }

@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
-using System.Threading;
 using System.Threading.Tasks;
-using Console = Colorful.Console;
+using Colorful;
 using static Olymp.Util.Log;
 
 namespace Olymp
 {
-    class Program
+    internal class Program
     {
         public static async Task Main(string[] args)
         {
@@ -26,7 +25,7 @@ namespace Olymp
             Console.Title = "Olymp";
 
             // Show colorfull version info
-            foreach (var color in new List<Color>{Yellow,Green,Color.LightSkyBlue,Color.Fuchsia})
+            foreach (var color in new List<Color> {Yellow, Green, Color.LightSkyBlue, Color.Fuchsia})
             {
                 Console.Clear();
                 Console.WriteAscii($"Olymp v{version}", color);

@@ -9,8 +9,8 @@ namespace Olymp.Util
 
     public class Configuration
     {
-        public bool WebUI;
         public string MasterIP;
+        public bool WebUI;
         public Role? Role { get; set; } = null;
         public string Name { get; set; }
         public string ConfigurationAddress { get; set; }

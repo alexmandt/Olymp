@@ -12,9 +12,7 @@ namespace Olymp.Util
             int hexIn;
             var hex = "";
 
-            for (var i = 0; (hexIn = fs.ReadByte()) != -1; i++){
-                hex += string.Format("{0:X2}", hexIn);
-            }
+            for (var i = 0; (hexIn = fs.ReadByte()) != -1; i++) hex += string.Format("{0:X2}", hexIn);
 
             return hex;
         }
@@ -25,10 +23,11 @@ namespace Olymp.Util
             for (var i = 0; i < c.Length; i++)
             {
                 var data = Convert.ToInt32($"0x{c[i]}{c[i + 1]}", 16);
-                byteList.Add((byte)data);
+                byteList.Add((byte) data);
                 i++;
             }
-            File.WriteAllBytes(outputPath,byteList.ToArray());
+
+            File.WriteAllBytes(outputPath, byteList.ToArray());
         }
     }
 }

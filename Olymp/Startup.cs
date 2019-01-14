@@ -1,5 +1,3 @@
-using System;
-using Olymp.Communication;
 using Olymp.Nodes.Abstractions;
 using Olymp.Nodes.Configuration;
 using Olymp.Nodes.Master;
@@ -13,7 +11,7 @@ namespace Olymp
 
         public Startup(string[] args)
         {
-            this._configuration = ConfigurationManager.GetConfiguration(args);
+            _configuration = ConfigurationManager.GetConfiguration(args);
         }
 
         public void Start()
@@ -22,24 +20,26 @@ namespace Olymp
             IService service;
 
             // Configure the service to an implementation
-            switch (this._configuration.Role)
+            switch (_configuration.Role)
             {
                 case Role.Master:
-                    service = new MasterNode(this._configuration);
+                    service = new MasterNode(_configuration);
                     break;
                 // Client node creation goes here
                 case Role.ConfigurationTool:
-                    service = new ConfigurationTool(this._configuration);
+                    service = new ConfigurationTool(_configuration);
                     break;
                 default:
-                    Log.Error("No role was specified for the node", this._configuration.Name);
+                    Log.Error("No role was specified for the node", _configuration.Name);
                     return;
             }
 
             service.Start();
 
             // TODO: Refactor to Task.Run();
-            while (true){}
+            while (true)
+            {
+            }
         }
     }
 }

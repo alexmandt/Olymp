@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Olymp.Communication.Messages;
 
 namespace Olymp.Persistence
 {

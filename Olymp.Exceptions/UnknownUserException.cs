@@ -4,6 +4,8 @@ namespace Olymp.Exceptions
 {
     public class UnknownUserException : Exception
     {
-        public UnknownUserException(string user) : base($"Unknown user: {user}!"){}
+        public UnknownUserException(string user) : base($"Unknown user: {user}!")
+        {
+        }
     }
 }

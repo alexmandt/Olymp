@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Olymp.Util
@@ -6,14 +7,11 @@ namespace Olymp.Util
     {
         public static string CalculateMD5Hash(string input)
         {
-            var md5 = System.Security.Cryptography.MD5.Create();
+            var md5 = MD5.Create();
             var inputBytes = Encoding.ASCII.GetBytes(input);
             var hash = md5.ComputeHash(inputBytes);
             var sb = new StringBuilder();
-            foreach (var t in hash)
-            {
-                sb.Append(t.ToString("X2"));
-            }
+            foreach (var t in hash) sb.Append(t.ToString("X2"));
 
             return sb.ToString();
         }

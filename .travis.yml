@@ -1,0 +1,9 @@
+language: csharp
+mono: none
+dotnet: 2.1
+script:
+  - dotnet restore
+  - dotnet build
+  - dotnet test
+notifications:
+  slack: olymp-workspace:qO3b5icNtQKxC3KNp3XMAnV9

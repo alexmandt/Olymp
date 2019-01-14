@@ -1,10 +1,9 @@
 using System;
-using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using MessagePack;
 using Olymp.Communication.Messages;
+using Olymp.Exceptions;
 using Olymp.Persistence;
 using Olymp.Util;
 using static Olymp.Util.Log;
@@ -14,35 +13,34 @@ namespace Olymp.Communication
     public class NodeCommunicationServer
     {
         private readonly string _address;
-        private readonly int _port;
         private readonly string _name;
-        private bool printStart = false;
-        
+        private readonly int _port;
+        private bool _printRestartMessage;
+
         public NodeCommunicationServer(string address, int port, string name)
         {
-            this._address = address;
-            this._port = port;
-            this._name = name;
+            _address = address;
+            _port = port;
+            _name = name;
         }
 
         public void Start(Func<Message, byte[], (Command cmd, IMessage unencryptedMessage)> onReceiveFunction)
         {
             TcpListener server = null;
             while (true)
-            {
                 try
                 {
-                    var localAddress = IPAddress.Parse(this._address);
-                    server = new TcpListener(localAddress, this._port);
+                    var localAddress = IPAddress.Parse(_address);
+                    server = new TcpListener(localAddress, _port);
 
                     server.Start();
 
-                    if (printStart)
+                    if (_printRestartMessage)
                     {
-                        Info("Server restarted!",_name);
-                        printStart = false;
+                        Info("Server restarted!", _name);
+                        _printRestartMessage = false;
                     }
-                    
+
                     while (true)
                     {
                         var client = server.AcceptTcpClient();
@@ -61,16 +59,12 @@ namespace Olymp.Communication
                             {
                                 decryptedMessage = RijndaelManager.Decrypt(deserializedMessage.Content, pwd);
                             }
-                            catch (Exception e)
+                            catch (Exception)
                             {
-                                //ignored - Invalid encryption
-                                //Drop message - could be an attack
-                                bytes = new byte[256];
+                                // Ignored - Invalid encryption
+                                // Drop message - could be an attack
                                 client.Close();
-                                // If you continue the client will try to receive more bytes, but since it is closed it'll throw an Exception
-                                // Instead throw an exception that decryption failed, which will be handled by the outer try-catch block
-                                // and the error will be logged
-                                continue;
+                                throw new DecryptionFailedException();
                             }
 
                             #endregion
@@ -81,11 +75,14 @@ namespace Olymp.Communication
                                 #region Request node neighbour
 
                                 case Command.REQ:
-                                    Info($"Node {MessagePackSerializer.Deserialize<SingleValueMessage>(decryptedMessage).Value} connected!", _name);
+                                    Info(
+                                        $"Node {MessagePackSerializer.Deserialize<SingleValueMessage>(decryptedMessage).Value} connected!",
+                                        _name);
                                     responseMsg.User = deserializedMessage.User;
                                     responseMsg.Command = Command.OK;
-                                    var b = MessagePackSerializer.Serialize(new SingleValueMessage {Value = _name});
-                                    responseMsg.Content = RijndaelManager.Encrypt(b, pwd);
+                                    var newMessage = MessagePackSerializer.Serialize(new SingleValueMessage
+                                        {Value = _name});
+                                    responseMsg.Content = RijndaelManager.Encrypt(newMessage, pwd);
                                     break;
 
                                 #endregion
@@ -101,9 +98,11 @@ namespace Olymp.Communication
 
                                 default:
                                     responseMsg.User = deserializedMessage.User;
-                                    (var command, object content) = onReceiveFunction(deserializedMessage, decryptedMessage);
+                                    (var command, object content) =
+                                        onReceiveFunction(deserializedMessage, decryptedMessage);
                                     responseMsg.Command = command;
-                                    responseMsg.Content = RijndaelManager.Encrypt(MessagePackSerializer.Serialize(content), pwd);
+                                    responseMsg.Content =
+                                        RijndaelManager.Encrypt(MessagePackSerializer.Serialize(content), pwd);
                                     break;
                             }
 
@@ -116,23 +115,22 @@ namespace Olymp.Communication
                 }
                 catch (SocketException e)
                 {
-                    restart(e);
+                    Restart(e);
                 }
                 catch (Exception e)
                 {
-                    restart(e);
+                    Restart(e);
                 }
                 finally
                 {
                     server?.Stop();
                 }
-            }
 
-            void restart(Exception e)
+            void Restart(Exception e)
             {
                 Error($"Exception: {e.Message}", _name);
                 Info("Restarting server...", _name);
-                printStart = true;
+                _printRestartMessage = true;
             }
         }
     }
