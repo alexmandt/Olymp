@@ -15,9 +15,10 @@ namespace Olymp.Util
             rijndael.Key = pdb.GetBytes(32);
             rijndael.IV = pdb.GetBytes(16);
             rijndael.Padding = PaddingMode.PKCS7;
-            
-            using(var memoryStream = new MemoryStream())
-            using(var cryptoStream =  new CryptoStream(memoryStream, rijndael.CreateEncryptor(), CryptoStreamMode.Write))
+
+            using (var memoryStream = new MemoryStream())
+            using (var cryptoStream =
+                new CryptoStream(memoryStream, rijndael.CreateEncryptor(), CryptoStreamMode.Write))
             {
                 cryptoStream.Write(plain, 0, plain.Length);
                 cryptoStream.Close();
@@ -32,9 +33,10 @@ namespace Olymp.Util
             rijndael.Key = pdb.GetBytes(32);
             rijndael.IV = pdb.GetBytes(16);
             rijndael.Padding = PaddingMode.PKCS7;
-            
-            using(var memoryStream = new MemoryStream())
-            using(var cryptoStream =  new CryptoStream(memoryStream, rijndael.CreateDecryptor(), CryptoStreamMode.Write))
+
+            using (var memoryStream = new MemoryStream())
+            using (var cryptoStream =
+                new CryptoStream(memoryStream, rijndael.CreateDecryptor(), CryptoStreamMode.Write))
             {
                 cryptoStream.Write(cipher, 0, cipher.Length);
                 cryptoStream.Close();

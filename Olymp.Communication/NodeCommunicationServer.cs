@@ -69,7 +69,7 @@ namespace Olymp.Communication
 
                             #endregion
 
-                            var responseMsg = new Message();
+                            var responseMsg = new Message {User = deserializedMessage.User};
                             switch (deserializedMessage.Command)
                             {
                                 #region Request node neighbour
@@ -78,7 +78,6 @@ namespace Olymp.Communication
                                     Info(
                                         $"Node {MessagePackSerializer.Deserialize<SingleValueMessage>(decryptedMessage).Value} connected!",
                                         _name);
-                                    responseMsg.User = deserializedMessage.User;
                                     responseMsg.Command = Command.OK;
                                     var newMessage = MessagePackSerializer.Serialize(new SingleValueMessage
                                         {Value = _name});
@@ -91,13 +90,14 @@ namespace Olymp.Communication
 
                                 case Command.OK:
                                 case Command.FAIL:
-                                    responseMsg = deserializedMessage;
+                                    responseMsg.Command = Command.OK;
+                                    responseMsg.Content = 
+                                        RijndaelManager.Encrypt(MessagePackSerializer.Serialize(deserializedMessage), pwd);
                                     break;
 
                                 #endregion
 
                                 default:
-                                    responseMsg.User = deserializedMessage.User;
                                     (var command, object content) =
                                         onReceiveFunction(deserializedMessage, decryptedMessage);
                                     responseMsg.Command = command;

@@ -25,6 +25,12 @@ namespace Olymp.Nodes.Configuration
         private readonly Regex getStatus =
             new Regex(" *ge?t? *st?a?t?u?s? *(se?l?f?|al?l?|no?d?e?s?) *", RegexOptions.Compiled);
 
+        private readonly Regex ok = new Regex(" *ok\\? *", RegexOptions.Compiled);
+        
+        private readonly Regex fail = new Regex(" *fail\\! *", RegexOptions.Compiled);
+        
+        private readonly Regex clear = new Regex(" *cl?e?a?r?s?c?r?e?e?n? *", RegexOptions.Compiled);
+
         private readonly Regex putPipeline =
             new Regex(" *pu?t? *pip?e?l?i?n?e? *\"(.+)\" *as? *\"(.+)\" *", RegexOptions.Compiled);
 
@@ -54,9 +60,16 @@ namespace Olymp.Nodes.Configuration
                 Console.Write($"{name}> ");
                 var command = Console.ReadLine();
 
-                var msgCommand = Command.FAIL;
+                var msgCommand = Command.UNKNOWN;
                 IMessage content = null;
-
+                
+                //Local commands
+                if (clear.IsMatch(command))
+                {
+                    Console.Clear();
+                    continue;
+                }
+                
                 //Add user
                 if (addUser.IsMatch(command))
                 {
@@ -127,8 +140,22 @@ namespace Olymp.Nodes.Configuration
                     };
                     content = getStatusMsg;
                 }
+                //Ok?
+                else if (ok.IsMatch(command))
+                {
+                    msgCommand = Command.OK;
+                    var okMsg = new EmptyMessage();
+                    content = okMsg;
+                }
+                //Fail!
+                else if (fail.IsMatch(command))
+                {
+                    msgCommand = Command.FAIL;
+                    var failMsg = new EmptyMessage();
+                    content = failMsg;
+                }
 
-                if (msgCommand != Command.FAIL)
+                if (msgCommand != Command.UNKNOWN)
                 {
                     var response = NodeCommunicationClient.Send(
                         _configuration.ConfigurationAddress,
@@ -151,6 +178,12 @@ namespace Olymp.Nodes.Configuration
                                     Console.WriteLine($"{stat.Name} - " + (stat.Up ? "UP" : "DOWN") + "\n",
                                         stat.Up ? Log.Green : Log.Red);
                                 });
+                                break;
+                            case Command.OK:
+                                Console.WriteLine("Ok!", Log.Green);
+                                break;
+                            case Command.FAIL:
+                                Console.WriteLine(":(", Log.Red);
                                 break;
                         }
                     else

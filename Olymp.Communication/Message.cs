@@ -14,15 +14,16 @@ namespace Olymp.Communication
     public enum Command
     {
         //GENERAL COMMANDS
-        REQ,
-        OK,
-        FAIL,
+        REQ = 0x0,
+        OK = 0x1,
+        FAIL = 0x2,
+        UNKNOWN = 0x03,
 
         //CONF
-        CONF_ADD_USER,
-        CONF_PUT_PIPELINE,
-        CONF_PUT_PROGRAM,
-        CONF_DISTRIBUTE,
-        CONF_GET_STATUS
+        CONF_ADD_USER = 0x10,
+        CONF_PUT_PIPELINE = 0x11,
+        CONF_PUT_PROGRAM = 0x12,
+        CONF_DISTRIBUTE = 0x13,
+        CONF_GET_STATUS = 0x14,
     }
 }
