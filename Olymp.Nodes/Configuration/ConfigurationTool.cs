@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Colorful;
@@ -82,7 +83,7 @@ namespace Olymp.Nodes.Configuration
                     {
                         TargetName = groups[2],
                         TargetType = isProgram ? TargetTypes.PROGRAM : TargetTypes.PIPELINE,
-                        Content = FileHelper.ReadHexString(groups[1])
+                        Content = File.ReadAllBytes(groups[1])
                     };
                     content = putMsg;
                 }

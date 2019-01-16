@@ -7,9 +7,8 @@ namespace Olymp.Communication.Messages
     {
         [System.ComponentModel.DataAnnotations.Key]
         public string TargetName { get; set; }
-
         public string TargetType { get; set; }
-        public string Content { get; set; }
+        public byte[] Content { get; set; }
     }
 
     public static class TargetTypes
