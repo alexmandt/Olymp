@@ -16,26 +16,26 @@ namespace Olymp.Nodes.Configuration
         private const string CONFIG = "CONFIG";
         private readonly Util.Configuration _configuration;
 
-        private readonly Regex addUser = new Regex(" *ad?d? *us?e?r? *\"(.+)\" *\"(.+)\" *(tr?u?e?|fa?l?s?e?) *",
+        private readonly Regex addUser = new Regex("^ *ad?d? *us?e?r? *\"(.+)\" *\"(.+)\" *le?v?e?l? *([0-9]) *$",
             RegexOptions.Compiled);
 
         private readonly Regex distribute =
-            new Regex(" *di?s?t?r?i?b?u?t?e? *\"(.+)\" *to? *\"(.+)\" *", RegexOptions.Compiled);
+            new Regex("^ *di?s?t?r?i?b?u?t?e? *\"(.+)\" *to? *\"(.+)\" *$", RegexOptions.Compiled);
 
         private readonly Regex getStatus =
-            new Regex(" *ge?t? *st?a?t?u?s? *(se?l?f?|al?l?|no?d?e?s?) *", RegexOptions.Compiled);
+            new Regex("^ *ge?t? *st?a?t?u?s? *(se?l?f?|al?l?|no?d?e?s?) *$", RegexOptions.Compiled);
 
-        private readonly Regex ok = new Regex(" *ok\\? *", RegexOptions.Compiled);
+        private readonly Regex ok = new Regex("^ *ok\\? *$", RegexOptions.Compiled);
         
-        private readonly Regex fail = new Regex(" *fail\\! *", RegexOptions.Compiled);
+        private readonly Regex fail = new Regex("^ *fail\\! *$", RegexOptions.Compiled);
         
-        private readonly Regex clear = new Regex(" *cl?e?a?r?s?c?r?e?e?n? *", RegexOptions.Compiled);
+        private readonly Regex clear = new Regex("^ *cl?e?a?r?s?c?r?e?e?n? *$", RegexOptions.Compiled);
 
         private readonly Regex putPipeline =
-            new Regex(" *pu?t? *pip?e?l?i?n?e? *\"(.+)\" *as? *\"(.+)\" *", RegexOptions.Compiled);
+            new Regex("^ *pu?t? *pip?e?l?i?n?e? *\"(.+)\" *as? *\"(.+)\" *on? *ru?n?t?i?m?e? *\"(.+)\" *$", RegexOptions.Compiled);
 
         private readonly Regex putProgram =
-            new Regex(" *pu?t? *pro?g?r?a?m? *\"(.+)\" *as? *\"(.+)\" *", RegexOptions.Compiled);
+            new Regex("^ *pu?t? *pro?g?r?a?m? *\"(.+)\" *as? *\"(.+)\" *on? *ru?n?t?i?m?e? *\"(.+)\" *$", RegexOptions.Compiled);
 
         public ConfigurationTool(Util.Configuration configuration)
         {
@@ -96,7 +96,8 @@ namespace Olymp.Nodes.Configuration
                     {
                         TargetName = groups[2],
                         TargetType = isProgram ? TargetTypes.PROGRAM : TargetTypes.PIPELINE,
-                        Content = File.ReadAllBytes(groups[1])
+                        Content = File.ReadAllBytes(groups[1]),
+                        Runtime = groups[3]
                     };
                     content = putMsg;
                 }

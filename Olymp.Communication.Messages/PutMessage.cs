@@ -9,6 +9,7 @@ namespace Olymp.Communication.Messages
         public string TargetName { get; set; }
         public string TargetType { get; set; }
         public byte[] Content { get; set; }
+        public string Runtime { get; set; }
     }
 
     public static class TargetTypes
