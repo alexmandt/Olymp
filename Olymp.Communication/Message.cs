@@ -21,9 +21,11 @@ namespace Olymp.Communication
 
         //CONF
         CONF_ADD_USER = 0x10,
-        CONF_PUT_PIPELINE = 0x11,
-        CONF_PUT_PROGRAM = 0x12,
-        CONF_DISTRIBUTE = 0x13,
-        CONF_GET_STATUS = 0x14,
+        CONF_SET_USER_LEVEL = 0x11,
+        CONF_REMOVE_USER = 0x12,
+        CONF_PUT_PIPELINE = 0x13,
+        CONF_PUT_PROGRAM = 0x14,
+        CONF_DISTRIBUTE = 0x15,
+        CONF_GET_STATUS = 0x16
     }
 }

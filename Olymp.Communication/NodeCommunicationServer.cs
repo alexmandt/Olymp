@@ -91,18 +91,23 @@ namespace Olymp.Communication
                                 case Command.OK:
                                 case Command.FAIL:
                                     responseMsg.Command = Command.OK;
-                                    responseMsg.Content = 
-                                        RijndaelManager.Encrypt(MessagePackSerializer.Serialize(deserializedMessage), pwd);
+                                    responseMsg.Content = RijndaelManager.Encrypt(MessagePackSerializer.Serialize(deserializedMessage), pwd);
                                     break;
 
                                 #endregion
 
                                 default:
-                                    (var command, object content) =
-                                        onReceiveFunction(deserializedMessage, decryptedMessage);
-                                    responseMsg.Command = command;
-                                    responseMsg.Content =
-                                        RijndaelManager.Encrypt(MessagePackSerializer.Serialize(content), pwd);
+                                    try
+                                    {
+                                        (var command, object content) = onReceiveFunction(deserializedMessage, decryptedMessage);
+                                        responseMsg.Command = command;
+                                        responseMsg.Content = RijndaelManager.Encrypt(MessagePackSerializer.Serialize(content), pwd);
+                                    }
+                                    catch (Exception)
+                                    {
+                                        responseMsg.Command = Command.FAIL;
+                                        responseMsg.Content = RijndaelManager.Encrypt(MessagePackSerializer.Serialize(new SingleValueMessage{Value = ":("}), pwd);
+                                    }
                                     break;
                             }
 

@@ -23,7 +23,7 @@ namespace Olymp.Persistence
             }
             catch (Exception)
             {
-                AddUser(new AddUserMessage {IsAdmin = true, Username = "admin", Password = "admin"});
+                AddUser(new AddUserMessage {Level = 9, Username = "admin", Password = "admin"});
             }
         }
 
@@ -38,17 +38,30 @@ namespace Olymp.Persistence
 
         public StoreContext.User GetUser(string username)
         {
-            return _db.Users
-                       .FirstOrDefault(a => a.UserName == username) ??
-                   throw new UnknownUserException(username);
+            return _db.Users.FirstOrDefault(a => a.UserName == username) ?? throw new UnknownUserException(username);
         }
 
+        public void UpdateUser(string name, StoreContext.User user)
+        {
+            var dbUser = GetUser(name);
+            dbUser.Level = user.Level;
+            dbUser.UserName = user.UserName;
+            dbUser.Password = user.Password;
+            _db.SaveChanges();
+        }
+
+        public void RemoveUser(string name)
+        {
+            _db.Users.Remove(GetUser(name));
+            _db.SaveChanges();
+        }
+        
         private StoreContext.User ConvertToUser(AddUserMessage newUserMessage)
         {
             return new StoreContext.User
             {
                 Id = Guid.NewGuid().ToString(),
-                IsAdmin = newUserMessage.IsAdmin,
+                Level = newUserMessage.Level,
                 Password = MD5Helper.CalculateMD5Hash(newUserMessage.Password),
                 UserName = newUserMessage.Username
             };
