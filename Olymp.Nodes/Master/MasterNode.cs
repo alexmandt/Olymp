@@ -9,6 +9,7 @@ namespace Olymp.Nodes.Master
     {
         public MasterNode(Util.Configuration configuration) : base(configuration, 17930)
         {
+            // TODO: Register as service with DI
             new ConfigurationServerNode(configuration).Start();
             Success("Started MasterNode!", _name);
         }
