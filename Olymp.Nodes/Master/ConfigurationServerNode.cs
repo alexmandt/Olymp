@@ -11,7 +11,9 @@ namespace Olymp.Nodes.Master
     {
         public ConfigurationServerNode(Util.Configuration configuration) : base(configuration, 17929)
         {
-            _name = _name + ".cfg";
+            if (_name.Substring(_name.Length - 4) != ".cfg")
+                _name = _name + ".cfg";
+
             Success("Started ConfigurationServer", _name);
         }
 

@@ -25,7 +25,7 @@ namespace Olymp
                 case Role.Master:
                     service = new MasterNode(_configuration);
                     break;
-                // Client node creation goes here
+                // Child node creation goes here
                 case Role.ConfigurationTool:
                     service = new ConfigurationTool(_configuration);
                     break;
