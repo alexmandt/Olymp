@@ -45,6 +45,31 @@ namespace Olymp.Nodes.Master
                     {
                         return (Command.FAIL, new SingleValueMessage {Value = file.TargetName});
                     }
+                case Command.CONF_SET_USER_LEVEL:
+                    var setUserLevelMessage = MessagePackSerializer.Deserialize<SetUserLevelMessage>(unencryptedMessage);
+                
+                    try
+                    {
+                        var user = UserRepository.Instance.GetUser(setUserLevelMessage.User);
+                        user.Level = setUserLevelMessage.NewLevel;
+                        UserRepository.Instance.UpdateUser(user.UserName, user);
+                        return (Command.OK, setUserLevelMessage);
+                    }
+                    catch (Exception)
+                    {
+                        return (Command.FAIL, setUserLevelMessage);
+                    }
+                case Command.CONF_REMOVE_USER:
+                    var removeUser = MessagePackSerializer.Deserialize<SingleValueMessage>(unencryptedMessage);
+                    try
+                    {
+                        UserRepository.Instance.RemoveUser(removeUser.Value);
+                        return (Command.OK, removeUser);
+                    }
+                    catch (Exception)
+                    {
+                        return (Command.FAIL, removeUser);
+                    }
 //                case Command.CONF_DISTRIBUTE:
 //                    // TODO: Implement a distribute command
 //                    return (Command.FAIL, "NOT IMPLEMENTED YET");
@@ -61,8 +86,7 @@ namespace Olymp.Nodes.Master
 //                        }
 //                    });
                 default:
-                    return (Command.FAIL,
-                        new SingleValueMessage {Value = "Command not recognized. Check versions compatibility. :("});
+                    return (Command.FAIL, new SingleValueMessage {Value = "Command not recognized. Check versions compatibility. :("});
             }
         }
     }

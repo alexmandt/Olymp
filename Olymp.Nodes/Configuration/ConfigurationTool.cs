@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Colorful;
@@ -10,25 +12,21 @@ using Olymp.Util;
 
 namespace Olymp.Nodes.Configuration
 {
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class ConfigurationTool : IService
     {
         private const string CONFIG = "CONFIG";
         private readonly Util.Configuration _configuration;
-
-        private readonly Regex addUser = new Regex(" *ad?d? *us?e?r? *\"(.+)\" *\"(.+)\" *(tr?u?e?|fa?l?s?e?) *",
-            RegexOptions.Compiled);
-
-        private readonly Regex distribute =
-            new Regex(" *di?s?t?r?i?b?u?t?e? *\"(.+)\" *to? *\"(.+)\" *", RegexOptions.Compiled);
-
-        private readonly Regex getStatus =
-            new Regex(" *ge?t? *st?a?t?u?s? *(se?l?f?|al?l?|no?d?e?s?) *", RegexOptions.Compiled);
-
-        private readonly Regex putPipeline =
-            new Regex(" *pu?t? *pip?e?l?i?n?e? *\"(.+)\" *as? *\"(.+)\" *", RegexOptions.Compiled);
-
-        private readonly Regex putProgram =
-            new Regex(" *pu?t? *pro?g?r?a?m? *\"(.+)\" *as? *\"(.+)\" *", RegexOptions.Compiled);
+        private readonly Regex addUser = new Regex("^ *ad?d? *us?e?r? *\"(.+)\" *\"(.+)\" *le?v?e?l? *([0-9]) *$", RegexOptions.Compiled);
+        private readonly Regex clear = new Regex("^ *cl?e?a?r?s?c?r?e?e?n? *$", RegexOptions.Compiled);
+        private readonly Regex distribute = new Regex("^ *di?s?t?r?i?b?u?t?e? *\"(.+)\" *to? *\"(.+)\" *$", RegexOptions.Compiled);
+        private readonly Regex fail = new Regex("^ *fail\\! *$", RegexOptions.Compiled);
+        private readonly Regex getStatus = new Regex("^ *ge?t? *st?a?t?u?s? *(se?l?f?|al?l?|no?d?e?s?) *$", RegexOptions.Compiled);
+        private readonly Regex ok = new Regex("^ *ok\\? *$", RegexOptions.Compiled);
+        private readonly Regex putPipeline = new Regex("^ *pu?t? *pip?e?l?i?n?e? *\"(.+)\" *as? *\"(.+)\" *on? *ru?n?t?i?m?e? *\"(.+)\" *$", RegexOptions.Compiled);
+        private readonly Regex putProgram = new Regex("^ *pu?t? *pro?g?r?a?m? *\"(.+)\" *as? *\"(.+)\" *on? *ru?n?t?i?m?e? *\"(.+)\" *$", RegexOptions.Compiled);
+        private readonly Regex setUserLevel = new Regex("^ *se?t? *us?e?r? *\"(.+)\" *le?v?e?l? *([0-9]) *$", RegexOptions.Compiled);
+        private readonly Regex removeUser = new Regex("^ *re?m?o?v?e? *us?e?r? *\"(.+)\" *$");
 
         public ConfigurationTool(Util.Configuration configuration)
         {
@@ -53,20 +51,48 @@ namespace Olymp.Nodes.Configuration
                 Console.Write($"{name}> ");
                 var command = Console.ReadLine();
 
-                var msgCommand = Command.FAIL;
+                var msgCommand = Command.UNKNOWN;
                 IMessage content = null;
+
+                //Local commands
+                if (clear.IsMatch(command))
+                {
+                    Console.Clear();
+                    continue;
+                }
 
                 //Add user
                 if (addUser.IsMatch(command))
                 {
                     var groups = addUser.Match(command).Groups.Select(a => a.Value).ToList();
+                    msgCommand = Command.CONF_ADD_USER;
                     var addUserMsg = new AddUserMessage
                     {
-                        IsAdmin = groups[3].First() == 't',
+                        Level = int.Parse(groups[3]),
                         Username = groups[1],
                         Password = groups[2]
                     };
                     content = addUserMsg;
+                }
+                //Set user level
+                else if (setUserLevel.IsMatch(command))
+                {
+                    var groups = setUserLevel.Match(command).Groups.Select(a => a.Value).ToList();
+                    msgCommand = Command.CONF_SET_USER_LEVEL;
+                    var setUserLevelMsg = new SetUserLevelMessage
+                    {
+                        User = groups[1],
+                        NewLevel = int.Parse(groups[2])
+                    };
+                    content = setUserLevelMsg;
+                }
+                //Remove user
+                else if (removeUser.IsMatch(command))
+                {
+                    var userName = removeUser.Match(command).Groups[1].Value;
+                    msgCommand = Command.CONF_REMOVE_USER;
+                    var removeUserMsg = new SingleValueMessage {Value = userName};
+                    content = removeUserMsg;
                 }
                 //Upload file
                 else if (putProgram.IsMatch(command) || putPipeline.IsMatch(command))
@@ -82,7 +108,8 @@ namespace Olymp.Nodes.Configuration
                     {
                         TargetName = groups[2],
                         TargetType = isProgram ? TargetTypes.PROGRAM : TargetTypes.PIPELINE,
-                        Content = FileHelper.ReadHexString(groups[1])
+                        Content = File.ReadAllBytes(groups[1]),
+                        Runtime = groups[3]
                     };
                     content = putMsg;
                 }
@@ -126,8 +153,22 @@ namespace Olymp.Nodes.Configuration
                     };
                     content = getStatusMsg;
                 }
+                //Ok?
+                else if (ok.IsMatch(command))
+                {
+                    msgCommand = Command.OK;
+                    var okMsg = new EmptyMessage();
+                    content = okMsg;
+                }
+                //Fail!
+                else if (fail.IsMatch(command))
+                {
+                    msgCommand = Command.FAIL;
+                    var failMsg = new EmptyMessage();
+                    content = failMsg;
+                }
 
-                if (msgCommand != Command.FAIL)
+                if (msgCommand != Command.UNKNOWN)
                 {
                     var response = NodeCommunicationClient.Send(
                         _configuration.ConfigurationAddress,
@@ -150,6 +191,12 @@ namespace Olymp.Nodes.Configuration
                                     Console.WriteLine($"{stat.Name} - " + (stat.Up ? "UP" : "DOWN") + "\n",
                                         stat.Up ? Log.Green : Log.Red);
                                 });
+                                break;
+                            case Command.OK:
+                                Console.WriteLine("Ok!", Log.Green);
+                                break;
+                            case Command.FAIL:
+                                Console.WriteLine(":(", Log.Red);
                                 break;
                         }
                     else
