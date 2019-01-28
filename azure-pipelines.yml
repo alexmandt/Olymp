@@ -10,9 +10,11 @@ trigger:
     include:
     - master
     - dev
-    - features/*
+    - feature/*
+    - hotfix/*
     exclude:
-    - features/experimental/*
+    - feature/experimental/*
+    - hotfix/experimental/*
   paths:
     exclude:
     - README.md
