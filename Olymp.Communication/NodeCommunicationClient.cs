@@ -1,8 +1,6 @@
 using System;
-using System.IO;
 using System.Net.Sockets;
-using System.Text;
-using Newtonsoft.Json;
+using MessagePack;
 using Olymp.Util;
 using static Olymp.Util.Log;
 
@@ -10,54 +8,28 @@ namespace Olymp.Communication
 {
     public static class NodeCommunicationClient
     {
-        public static (Message message, string content) Send(string server, string username, string password, string message, Command command, string name)
+        public static (Message Message, byte[] Content) Send(string server, string username, string password,
+            object message, Command command, string name)
         {
             TcpClient client = null;
-            Stream stream = null;
-
+            NetworkStream stream = null;
             try
             {
-                #region Encrypt message
-
-                password = MD5Helper.CalculateMD5Hash(password);
-
-                var iv = new byte[16];
-                var bytesiv = Encoding.UTF8.GetBytes(username);
-                for (var i = 0; i < bytesiv.Length; i++)
-                {
-                    iv[i] = bytesiv[i];
-                }
-
-                var pwd = new byte[32];
-                var bytespwd = Encoding.UTF8.GetBytes(password);
-
-                for (var i = 0; i < bytespwd.Length; i++)
-                {
-                    pwd[i] = bytespwd[i];
-                }
-
-                var msg = JsonConvert.SerializeObject(new Message
-                {
-                    User = username,
-                    Command = command,
-                    Content = RijndaelManager.EncryptStringToBytes(message, pwd, iv)
-                });
-
-                #endregion
-
-                var data = Encoding.UTF8.GetBytes(msg);
-
-                client = new TcpClient(server.Split(":")[0],int.Parse(server.Split(":")[1]));
+                var data = EncryptMessage(username, password, command, message);
+                // TODO: Parse ip adress better
+                client = new TcpClient(server.Split(":")[0], int.Parse(server.Split(":")[1]));
                 stream = client.GetStream();
-                
+
                 stream.Write(data, 0, data.Length);
                 stream.Flush();
                 data = new byte[256];
                 stream.Read(data, 0, data.Length);
 
-                var returnData = JsonConvert.DeserializeObject<Message>(Encoding.UTF8.GetString(data));
-
-                return (returnData,RijndaelManager.DecryptStringFromBytes(returnData.Content, pwd, iv));
+                var returnData = MessagePackSerializer.Deserialize<Message>(data);
+                return (
+                    returnData,
+                    RijndaelManager.Decrypt(returnData.Content, MD5Helper.CalculateMD5Hash(password))
+                );
             }
             catch (ArgumentNullException e)
             {
@@ -74,6 +46,18 @@ namespace Olymp.Communication
                 stream?.Close();
                 client?.Close();
             }
+        }
+
+        private static byte[] EncryptMessage(string username, string password, Command command, object message)
+        {
+            password = MD5Helper.CalculateMD5Hash(password);
+            var bytes = MessagePackSerializer.Serialize(message);
+            return MessagePackSerializer.Serialize(new Message
+            {
+                User = username,
+                Command = command,
+                Content = RijndaelManager.Encrypt(bytes, password)
+            });
         }
     }
 }

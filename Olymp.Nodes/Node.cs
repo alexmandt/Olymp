@@ -1,30 +1,29 @@
-using System;
 using System.Threading.Tasks;
 using Olymp.Communication;
-using Olymp.Util;
+using Olymp.Communication.Messages;
+using Olymp.Nodes.Abstractions;
 
 namespace Olymp.Nodes
 {
-    public abstract class Node
+    public abstract class Node : IService
     {
-        protected readonly string Name;
+        private readonly string _address;
         private readonly int _port;
+        protected string _name;
 
         protected Node(Util.Configuration configuration, int port)
         {
+            _address = configuration.Address ?? "127.0.0.1";
             _port = port;
-            Name = configuration.Name;
+            _name = configuration.Name;
         }
 
-        public abstract (Command cmd, string unencryptedMessage) Handle(Message message, string unecryptedMessage);
-        
         public void Start()
         {
-            var ncs = new NodeCommunicationServer("127.0.0.1", _port, Name);
-            Task.Run(() =>
-            {
-                ncs.Start(Handle);
-            });
+            var server = new NodeCommunicationServer(_address, _port, _name);
+            Task.Run(() => { server.Start(Handle); });
         }
+
+        protected abstract (Command cmd, IMessage unencryptedMessage) Handle(Message message, byte[] unencryptedMessage);
     }
 }

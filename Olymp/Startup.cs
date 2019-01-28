@@ -1,5 +1,4 @@
-using System;
-using Olymp.Communication;
+using Olymp.Nodes.Abstractions;
 using Olymp.Nodes.Configuration;
 using Olymp.Nodes.Master;
 using Olymp.Util;
@@ -8,32 +7,39 @@ namespace Olymp
 {
     public class Startup
     {
-        private readonly string[] _args;
-        private Configuration _configuration;
-        
+        private readonly Configuration _configuration;
+
         public Startup(string[] args)
         {
-            _args = args;
-        }
-
-        public void Configure()
-        {
-            _configuration = ConfigurationManager.GetConfiguration(_args);
+            _configuration = ConfigurationManager.GetConfiguration(args);
         }
 
         public void Start()
         {
+            // Initialize an emty service
+            IService service;
+
+            // Configure the service to an implementation
             switch (_configuration.Role)
             {
                 case Role.Master:
-                    new MasterNode(_configuration).Start();
+                    service = new MasterNode(_configuration);
                     break;
-                case Role.ConfigClient:
-                    new ConfigClient(_configuration).Start();
+                // Child node creation goes here
+                case Role.ConfigurationTool:
+                    service = new ConfigurationTool(_configuration);
                     break;
+                default:
+                    Log.Error("No role was specified for the node", _configuration.Name);
+                    return;
             }
 
-            while (true){}
+            service.Start();
+
+            // TODO: Refactor to Task.Run();
+            while (true)
+            {
+            }
         }
     }
 }

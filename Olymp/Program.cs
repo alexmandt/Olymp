@@ -1,32 +1,37 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
-using System.Threading;
-using Console = Colorful.Console;
+using System.Threading.Tasks;
+using Colorful;
 using static Olymp.Util.Log;
 
 namespace Olymp
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
-            Title(0.1M);
+            // Show version and set title
+            await Title(0.1M);
+            // Configure the application with the arguments provided
             var startup = new Startup(args);
-            startup.Configure();
+
+            // Start the application
             startup.Start();
         }
 
-        private static void Title(decimal version)
+        private static async Task Title(decimal version)
         {
+            // Set the title
             Console.Title = "Olymp";
 
-            foreach (var color in new List<Color>{Yellow,Green,Color.LightSkyBlue,Color.Fuchsia})
+            // Show colorfull version info
+            foreach (var color in new List<Color> {Yellow, Green, Color.LightSkyBlue, Color.Fuchsia})
             {
                 Console.Clear();
                 Console.WriteAscii($"Olymp v{version}", color);
-                Console.WriteLine("A distributed compute engine that allows you to focus on your work", color);
+                Console.WriteLine("The simple distributed compute engine", color);
                 Console.WriteLine();
-                Thread.Sleep(1000);
+                await Task.Delay(500);
             }
         }
     }

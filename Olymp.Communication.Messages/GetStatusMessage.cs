@@ -1,27 +1,27 @@
 using System.Collections.Generic;
+using MessagePack;
 
 namespace Olymp.Communication.Messages
 {
-    public class GetStatusMessage
+    [MessagePackObject(true)]
+    public class GetStatusMessage : IMessage
     {
-        public StatusTarget Target;
-        public List<Status> Status;
+        public StatusTarget Target { get; set; }
+        public List<Status> StatusInfo { get; set; }
     }
 
+    [MessagePackObject(true)]
     public class Status
     {
-        //TODO more info (workers, resources etc)
-        public bool Up;
-        public string Name;
+        // TODO: Add more info (workers, resources, etc...)
+        public bool Up { get; set; }
+        public string Name { get; set; }
     }
-    
+
     public enum StatusTarget
     {
-        //Self
-        S,
-        //All
-        A,
-        //Nodes
-        N
+        Self,
+        All,
+        Nodes
     }
 }

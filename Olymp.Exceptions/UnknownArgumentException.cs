@@ -4,6 +4,8 @@ namespace Olymp.Exceptions
 {
     public class UnknownArgumentException : Exception
     {
-        public UnknownArgumentException(string argument) : base($"Unknown argument: {argument}!"){}
+        public UnknownArgumentException(string argument) : base($"Unknown argument: {argument}!")
+        {
+        }
     }
 }

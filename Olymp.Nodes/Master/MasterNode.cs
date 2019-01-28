@@ -1,4 +1,6 @@
+using System;
 using Olymp.Communication;
+using Olymp.Communication.Messages;
 using static Olymp.Util.Log;
 
 namespace Olymp.Nodes.Master
@@ -7,13 +9,14 @@ namespace Olymp.Nodes.Master
     {
         public MasterNode(Util.Configuration configuration) : base(configuration, 17930)
         {
+            // TODO: Register as service with DI
             new ConfigurationServerNode(configuration).Start();
-            Success("Started MasterNode!",Name);
+            Success("Started MasterNode!", _name);
         }
 
-        public override (Command cmd, string unencryptedMessage) Handle(Message message, string unecryptedMessage)
+        protected override (Command cmd, IMessage unencryptedMessage) Handle(Message message, byte[] unencryptedMessage)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
     }
 }
