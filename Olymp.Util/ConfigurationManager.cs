@@ -5,7 +5,7 @@ namespace Olymp.Util
 {
     public class ConfigurationManager
     {
-        private static readonly Regex ip = new Regex("^[^\\:]*:[^\\:]*$", RegexOptions.Compiled);
+        private static readonly Regex ipRegex = new Regex("^[^\\:]*:[^\\:]*$", RegexOptions.Compiled);
 
         private static string GetValue(string[] args, ref int i)
         {
@@ -33,14 +33,20 @@ namespace Olymp.Util
                     case "-c":
                         config.Role = Role.Child;
                         config.MasterIP = GetValue(args, ref i);
-                        if (!ip.IsMatch(config.MasterIP)) throw new InvalidIpException(config.MasterIP);
+                        if (!ipRegex.IsMatch(config.MasterIP)) throw new InvalidIpException(config.MasterIP);
                         break;
                     case "--configure":
                     case "--conf":
                         config.Role = Role.ConfigurationTool;
-                        config.ConfigurationAddress = GetValue(args, ref i);
-                        if (!ip.IsMatch(config.ConfigurationAddress))
-                            throw new InvalidIpException(config.ConfigurationAddress);
+                        config.ConfigurationToolAddress = GetValue(args, ref i);
+                        if (!ipRegex.IsMatch(config.ConfigurationToolAddress))
+                            throw new InvalidIpException(config.ConfigurationToolAddress);
+                        break;
+                    case "--address":
+                    case "-a":
+                        config.Address = GetValue(args, ref i);
+                        if (!ipRegex.IsMatch(config.Address))
+                            throw new InvalidIpException(config.Address);
                         break;
                     case "--webui":
                     case "--web":
