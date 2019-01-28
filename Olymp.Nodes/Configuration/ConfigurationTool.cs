@@ -30,13 +30,14 @@ namespace Olymp.Nodes.Configuration
 
         public ConfigurationTool(Util.Configuration configuration)
         {
+            // TODO: Ensure appropriate settings are provided e.g. ConfigurationToolAddress, User, Password
             _configuration = configuration;
         }
 
         public void Start()
         {
             var returnedData = NodeCommunicationClient.Send(
-                _configuration.ConfigurationAddress,
+                _configuration.ConfigurationToolAddress,
                 _configuration.User,
                 _configuration.Password,
                 new SingleValueMessage {Value = CONFIG},
@@ -171,7 +172,7 @@ namespace Olymp.Nodes.Configuration
                 if (msgCommand != Command.UNKNOWN)
                 {
                     var response = NodeCommunicationClient.Send(
-                        _configuration.ConfigurationAddress,
+                        _configuration.ConfigurationToolAddress,
                         _configuration.User,
                         _configuration.Password,
                         content,
