@@ -16,11 +16,13 @@ namespace Olymp.Nodes.Child
         {
             switch (message.Command)
             {
-                case Command.OK:
-                case Command.FAIL:
+                case Command.MC_GET_STATUS:
+                    return (Command.CM_REPORT_STATUS, this.CheckStatus());
                 default:
-                    return (Command.OK, new SingleValueMessage() { Value = "Child node response" });
+                    return (Command.UNKNOWN, new SingleValueMessage() { Value = "Child node didn't recognize command." });
             }
         }
+
+        private IMessage CheckStatus() => new SingleValueMessage() { Value = $"{_name} is healthy!" };
     }
 }
