@@ -1,3 +1,5 @@
+using System;
+
 namespace Olymp.Util
 {
     public enum Role
@@ -9,7 +11,16 @@ namespace Olymp.Util
 
     public class Configuration
     {
-        public string MasterIP { get; internal set; }
+        public string MasterIP
+        {
+            get => MasterIP;
+            internal set
+            {
+                if (value == null) throw new ArgumentNullException(nameof(value));
+                MasterIP = Validator.ValidateIp(value);
+            }
+        }
+
         public bool WebUI { get; internal set; }
         public Role? Role { get; internal set; } = null;
         public string Name { get; internal set; }
