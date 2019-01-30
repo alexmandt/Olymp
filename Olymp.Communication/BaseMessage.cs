@@ -4,7 +4,7 @@ namespace Olymp.Communication
 {
     // Will be obsolete once we introduce MessagePack
     [MessagePackObject(true)]
-    public struct Message
+    public struct BaseMessage
     {
         public string User { get; set; }
         public Command Command { get; set; }
