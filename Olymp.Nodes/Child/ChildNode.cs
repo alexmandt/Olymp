@@ -19,10 +19,10 @@ namespace Olymp.Nodes.Child
                 case Command.MC_GET_STATUS:
                     return (Command.CM_REPORT_STATUS, this.CheckStatus());
                 default:
-                    return (Command.UNKNOWN, new SingleValueMessage("Child node didn't recognize command."));
+                    return (Command.UNKNOWN, new SingleValueMessage() { Value = "Child node didn't recognize command." });
             }
         }
 
-        private IMessage CheckStatus() => new SingleValueMessage($"{_name} is healthy!");
+        private IMessage CheckStatus() => new SingleValueMessage() { Value = $"{_name} is healthy!" };
     }
 }
