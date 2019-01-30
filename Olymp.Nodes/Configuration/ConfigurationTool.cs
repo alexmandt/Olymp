@@ -40,7 +40,7 @@ namespace Olymp.Nodes.Configuration
                 _configuration.ConfigurationToolAddress,
                 _configuration.User,
                 _configuration.Password,
-                new SingleValueMessage {Value = CONFIG},
+                new SingleValueMessage(CONFIG),
                 Command.REQ,
                 nameof(ConfigurationTool));
 
@@ -92,7 +92,7 @@ namespace Olymp.Nodes.Configuration
                 {
                     var userName = removeUser.Match(command).Groups[1].Value;
                     msgCommand = Command.CONF_REMOVE_USER;
-                    var removeUserMsg = new SingleValueMessage {Value = userName};
+                    var removeUserMsg = new SingleValueMessage(userName);
                     content = removeUserMsg;
                 }
                 //Upload file

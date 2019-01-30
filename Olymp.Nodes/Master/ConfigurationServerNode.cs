@@ -27,12 +27,12 @@ namespace Olymp.Nodes.Master
                     {
                         UserRepository.Instance.AddUser(addUserMsg);
                         Success($"Added user {addUserMsg.Username}!", _name);
-                        return (Command.OK, new SingleValueMessage {Value = addUserMsg.Username});
+                        return (Command.OK, new SingleValueMessage(addUserMsg.Username));
                     }
                     catch (Exception)
                     {
                         Error($"Couldn't add user {addUserMsg.Username}!", _name);
-                        return (Command.FAIL, new SingleValueMessage {Value = addUserMsg.Username});
+                        return (Command.FAIL, new SingleValueMessage(addUserMsg.Username));
                     }
                 case Command.CONF_PUT_PROGRAM:
                 // Not implemented => default to pipeline
@@ -41,15 +41,15 @@ namespace Olymp.Nodes.Master
                     try
                     {
                         FileRepository.Instance.AddFile(file);
-                        return (Command.OK, new SingleValueMessage {Value = file.TargetName});
+                        return (Command.OK, new SingleValueMessage(file.TargetName));
                     }
                     catch (Exception)
                     {
-                        return (Command.FAIL, new SingleValueMessage {Value = file.TargetName});
+                        return (Command.FAIL, new SingleValueMessage(file.TargetName));
                     }
                 case Command.CONF_SET_USER_LEVEL:
                     var setUserLevelMessage = MessagePackSerializer.Deserialize<SetUserLevelMessage>(unencryptedMessage);
-                
+
                     try
                     {
                         var user = UserRepository.Instance.GetUser(setUserLevelMessage.User);
@@ -88,7 +88,7 @@ namespace Olymp.Nodes.Master
 //                        }
 //                    });
                 default:
-                    return (Command.FAIL, new SingleValueMessage {Value = "Command not recognized. Check versions compatibility. :("});
+                    return (Command.FAIL, new SingleValueMessage("Command not recognized. Check versions compatibility. :("));
             }
         }
     }

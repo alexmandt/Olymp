@@ -79,8 +79,7 @@ namespace Olymp.Communication
                                         $"Node {MessagePackSerializer.Deserialize<SingleValueMessage>(decryptedMessage).Value} connected!",
                                         _name);
                                     responseMsg.Command = Command.OK;
-                                    var newMessage = MessagePackSerializer.Serialize(new SingleValueMessage
-                                        {Value = _name});
+                                    var newMessage = MessagePackSerializer.Serialize(new SingleValueMessage(_name));
                                     responseMsg.Content = RijndaelManager.Encrypt(newMessage, pwd);
                                     break;
 
@@ -106,7 +105,7 @@ namespace Olymp.Communication
                                     catch (Exception)
                                     {
                                         responseMsg.Command = Command.FAIL;
-                                        responseMsg.Content = RijndaelManager.Encrypt(MessagePackSerializer.Serialize(new SingleValueMessage{Value = ":("}), pwd);
+                                        responseMsg.Content = RijndaelManager.Encrypt(MessagePackSerializer.Serialize(new SingleValueMessage(":(")), pwd);
                                     }
                                     break;
                             }
