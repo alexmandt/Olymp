@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Olymp.Communication;
 using Olymp.Communication.Messages;
 using Olymp.Nodes.Abstractions;
+using Olymp.Util;
 
 namespace Olymp.Nodes
 {
@@ -14,7 +15,9 @@ namespace Olymp.Nodes
         protected Node(Util.Configuration configuration, int port)
         {
             _address = configuration.Address ?? "127.0.0.1";
-            _port = port;
+            _port = int.Parse(
+                Validator.ValidatePort(port.ToString())
+            );
             _name = configuration.Name;
         }
 
@@ -24,6 +27,7 @@ namespace Olymp.Nodes
             Task.Run(() => { server.Start(Handle); });
         }
 
-        protected abstract (Command cmd, IMessage unencryptedMessage) Handle(Message message, byte[] unencryptedMessage);
+        protected abstract (Command cmd, IMessage unencryptedMessage)
+            Handle(Message message, byte[] unencryptedMessage);
     }
 }
