@@ -24,7 +24,7 @@ namespace Olymp.Communication
             _name = name;
         }
 
-        public void Start(Func<Message, byte[], (Command cmd, IMessage unencryptedMessage)> onReceiveFunction)
+        public void Start(Func<BaseMessage, (Command cmd, IMessage unencryptedMessage)> onReceiveFunction)
         {
             TcpListener server = null;
             while (true)
@@ -51,13 +51,13 @@ namespace Olymp.Communication
                         {
                             #region Decrypt message
 
-                            var deserializedMessage = MessagePackSerializer.Deserialize<Message>(bytes);
+                            var deserializedMessage = MessagePackSerializer.Deserialize<BaseMessage>(bytes);
                             var pwd = UserRepository.Instance.GetUser(deserializedMessage.User).Password;
 
-                            byte[] decryptedMessage;
                             try
                             {
-                                decryptedMessage = RijndaelManager.Decrypt(deserializedMessage.Content, pwd);
+                                byte[] decryptedContents = RijndaelManager.Decrypt(deserializedMessage.Content, pwd);
+                                deserializedMessage.Content = decryptedContents;
                             }
                             catch (Exception)
                             {
@@ -69,14 +69,14 @@ namespace Olymp.Communication
 
                             #endregion
 
-                            var responseMsg = new Message {User = deserializedMessage.User};
+                            var responseMsg = new BaseMessage {User = deserializedMessage.User};
                             switch (deserializedMessage.Command)
                             {
                                 #region Request node neighbour
 
                                 case Command.REQ:
                                     Info(
-                                        $"Node {MessagePackSerializer.Deserialize<SingleValueMessage>(decryptedMessage).Value} connected!",
+                                        $"Node {MessagePackSerializer.Deserialize<SingleValueMessage>(deserializedMessage.Content).Value} connected!",
                                         _name);
                                     responseMsg.Command = Command.OK;
                                     var newMessage = MessagePackSerializer.Serialize(new SingleValueMessage
@@ -99,7 +99,7 @@ namespace Olymp.Communication
                                 default:
                                     try
                                     {
-                                        (var command, object content) = onReceiveFunction(deserializedMessage, decryptedMessage);
+                                        (var command, object content) = onReceiveFunction(deserializedMessage);
                                         responseMsg.Command = command;
                                         responseMsg.Content = RijndaelManager.Encrypt(MessagePackSerializer.Serialize(content), pwd);
                                     }

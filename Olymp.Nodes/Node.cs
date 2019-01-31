@@ -24,6 +24,6 @@ namespace Olymp.Nodes
             Task.Run(() => { server.Start(Handle); });
         }
 
-        protected abstract (Command cmd, IMessage unencryptedMessage) Handle(Message message, byte[] unencryptedMessage);
+        protected abstract (Command cmd, IMessage unencryptedMessage) Handle(BaseMessage message);
     }
 }

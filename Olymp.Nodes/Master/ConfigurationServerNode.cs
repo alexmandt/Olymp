@@ -17,12 +17,12 @@ namespace Olymp.Nodes.Master
             Success("Started ConfigurationServer", _name);
         }
 
-        protected override (Command cmd, IMessage unencryptedMessage) Handle(Message message, byte[] unencryptedMessage)
+        protected override (Command cmd, IMessage unencryptedMessage) Handle(BaseMessage message)
         {
             switch (message.Command)
             {
                 case Command.CONF_ADD_USER:
-                    var addUserMsg = MessagePackSerializer.Deserialize<AddUserMessage>(unencryptedMessage);
+                    var addUserMsg = MessagePackSerializer.Deserialize<AddUserMessage>(message.Content);
                     try
                     {
                         UserRepository.Instance.AddUser(addUserMsg);
@@ -37,7 +37,7 @@ namespace Olymp.Nodes.Master
                 case Command.CONF_PUT_PROGRAM:
                 // Not implemented => default to pipeline
                 case Command.CONF_PUT_PIPELINE:
-                    var file = MessagePackSerializer.Deserialize<PutMessage>(unencryptedMessage);
+                    var file = MessagePackSerializer.Deserialize<PutMessage>(message.Content);
                     try
                     {
                         FileRepository.Instance.AddFile(file);
@@ -48,8 +48,8 @@ namespace Olymp.Nodes.Master
                         return (Command.FAIL, new SingleValueMessage {Value = file.TargetName});
                     }
                 case Command.CONF_SET_USER_LEVEL:
-                    var setUserLevelMessage = MessagePackSerializer.Deserialize<SetUserLevelMessage>(unencryptedMessage);
-                
+                    var setUserLevelMessage = MessagePackSerializer.Deserialize<SetUserLevelMessage>(message.Content);
+
                     try
                     {
                         var user = UserRepository.Instance.GetUser(setUserLevelMessage.User);
@@ -62,7 +62,7 @@ namespace Olymp.Nodes.Master
                         return (Command.FAIL, setUserLevelMessage);
                     }
                 case Command.CONF_REMOVE_USER:
-                    var removeUser = MessagePackSerializer.Deserialize<SingleValueMessage>(unencryptedMessage);
+                    var removeUser = MessagePackSerializer.Deserialize<SingleValueMessage>(message.Content);
                     try
                     {
                         UserRepository.Instance.RemoveUser(removeUser.Value);
