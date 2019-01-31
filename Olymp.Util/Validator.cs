@@ -25,9 +25,9 @@ namespace Olymp.Util
             if (ip == null)
                 throw new ArgumentNullException(nameof(ip));
 
-            var match = Regex.Match(ip, Ipv4Regex, RegexOptions.IgnoreCase).Success ||
-                        Regex.Match(ip, Ipv6Regex, RegexOptions.IgnoreCase).Success ||
-                        Regex.Match(ip, HostnameRegex, RegexOptions.IgnoreCase).Success;
+            var match = Regex.IsMatch(ip, Ipv4Regex, RegexOptions.Compiled) ||
+                        Regex.IsMatch(ip, Ipv6Regex, RegexOptions.Compiled) ||
+                        Regex.IsMatch(ip, HostnameRegex, RegexOptions.Compiled);
 
             if (!match) throw new InvalidIpOrHostnameException(ip);
             return true;
@@ -38,9 +38,9 @@ namespace Olymp.Util
             if (port == null)
                 throw new ArgumentNullException(nameof(port));
 
-            var match = Regex.Match(port, PortRegex, RegexOptions.IgnoreCase);
+            var match = Regex.IsMatch(port, PortRegex, RegexOptions.Compiled);
 
-            if (!match.Success)
+            if (!match)
                 throw new InvalidPortException(port);
 
             return true;
