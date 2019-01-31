@@ -20,22 +20,22 @@ namespace Olymp.Util
             @"^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$";
 
         //TODO: Implement referent method with UriParser
-        public static bool ValidateAddress(string ip)
+        public static bool ValidateAddress(string address)
         {
-            if (ip == null)
-                throw new ArgumentNullException(nameof(ip));
+            if (String.IsNullOrEmpty(address))
+                throw new ArgumentNullException(nameof(address));
 
-            var match = Regex.IsMatch(ip, Ipv4Regex, RegexOptions.Compiled) ||
-                        Regex.IsMatch(ip, Ipv6Regex, RegexOptions.Compiled) ||
-                        Regex.IsMatch(ip, HostnameRegex, RegexOptions.Compiled);
+            var match = Regex.IsMatch(address, Ipv4Regex, RegexOptions.Compiled) ||
+                        Regex.IsMatch(address, Ipv6Regex, RegexOptions.Compiled) ||
+                        Regex.IsMatch(address, HostnameRegex, RegexOptions.Compiled);
 
-            if (!match) throw new InvalidIpOrHostnameException(ip);
+            if (!match) throw new InvalidIpOrHostnameException(address);
             return true;
         }
 
         public static bool ValidatePort(string port)
         {
-            if (port == null)
+            if (String.IsNullOrEmpty(port))
                 throw new ArgumentNullException(nameof(port));
 
             var match = Regex.IsMatch(port, PortRegex, RegexOptions.Compiled);
