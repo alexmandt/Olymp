@@ -45,5 +45,17 @@ namespace Olymp.Util
 
             return true;
         }
+
+        public static bool ValidateStringValues(params string[] values)
+        {
+            foreach (var value in values)
+            {
+                if (String.IsNullOrEmpty(value))
+                {
+                    throw new InvalidArgumentException(value);
+                }
+            }
+            return true;
+        }
     }
 }
