@@ -19,10 +19,10 @@ namespace Olymp.Util
         private const string HostnameRegex =
             @"^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$";
 
-        //TODO: Implement referent method with UriParser
+        //TODO: Implement reference method with UriParser
         public static bool ValidateAddress(string address)
         {
-            if (String.IsNullOrEmpty(address))
+            if (string.IsNullOrEmpty(address))
                 throw new ArgumentNullException(nameof(address));
 
             var match = Regex.IsMatch(address, Ipv4Regex, RegexOptions.Compiled) ||
@@ -35,7 +35,7 @@ namespace Olymp.Util
 
         public static bool ValidatePort(string port)
         {
-            if (String.IsNullOrEmpty(port))
+            if (string.IsNullOrEmpty(port))
                 throw new ArgumentNullException(nameof(port));
 
             var match = Regex.IsMatch(port, PortRegex, RegexOptions.Compiled);
@@ -49,12 +49,8 @@ namespace Olymp.Util
         public static bool ValidateStringValues(params string[] values)
         {
             foreach (var value in values)
-            {
-                if (String.IsNullOrEmpty(value))
-                {
+                if (string.IsNullOrEmpty(value))
                     throw new InvalidArgumentException(value);
-                }
-            }
             return true;
         }
     }

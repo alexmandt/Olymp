@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>netcoreapp2.1</TargetFramework>
@@ -6,6 +6,10 @@
 
     <ItemGroup>
       <PackageReference Include="MessagePack" Version="1.7.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Olymp.Util\Olymp.Util.csproj"/>
     </ItemGroup>
 
 </Project>
