@@ -6,26 +6,34 @@ namespace Olymp.Util
 {
     public static class Validator
     {
-        private const string IpRegex =
+        private const string Ipv4Regex =
             @"^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$";
 
         private const string PortRegex =
             @"^([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$";
 
-        public static string ValidateIp(string ip)
+        private const string Ipv6Regex =
+            @"^([0-9a-f]{0,4}:){2,7}(:|[0-9a-f]{1,4})$";
+
+        //HostnameRegex is valid as per RFC 1123.
+        private const string HostnameRegex =
+            @"^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$";
+
+        //TODO: Implement referent method with UriParser
+        public static bool ValidateAddress(string ip)
         {
             if (ip == null)
                 throw new ArgumentNullException(nameof(ip));
 
-            var match = Regex.Match(ip, IpRegex, RegexOptions.IgnoreCase);
+            var match = Regex.Match(ip, Ipv4Regex, RegexOptions.IgnoreCase).Success ||
+                        Regex.Match(ip, Ipv6Regex, RegexOptions.IgnoreCase).Success ||
+                        Regex.Match(ip, HostnameRegex, RegexOptions.IgnoreCase).Success;
 
-            if (!match.Success)
-                throw new InvalidIpException(ip);
-
-            return ip;
+            if (!match) throw new InvalidIpOrHostnameException(ip);
+            return true;
         }
 
-        public static string ValidatePort(string port)
+        public static bool ValidatePort(string port)
         {
             if (port == null)
                 throw new ArgumentNullException(nameof(port));
@@ -35,7 +43,7 @@ namespace Olymp.Util
             if (!match.Success)
                 throw new InvalidPortException(port);
 
-            return port;
+            return true;
         }
     }
 }

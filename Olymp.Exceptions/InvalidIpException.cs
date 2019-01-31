@@ -2,9 +2,9 @@ using System;
 
 namespace Olymp.Exceptions
 {
-    public class InvalidIpException : Exception
+    public class InvalidIpOrHostnameException : Exception
     {
-        public InvalidIpException(string ip) : base($"IP address format invalid: {ip}!")
+        public InvalidIpOrHostnameException(string ip) : base($"IP address format invalid: {ip}!")
         {
         }
     }

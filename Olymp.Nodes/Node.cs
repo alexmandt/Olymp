@@ -15,9 +15,7 @@ namespace Olymp.Nodes
         protected Node(Util.Configuration configuration, int port)
         {
             _address = configuration.Address ?? "127.0.0.1";
-            _port = int.Parse(
-                Validator.ValidatePort(port.ToString())
-            );
+            _port = Validator.ValidatePort(port.ToString()) ? port : -1;
             _name = configuration.Name;
         }
 
