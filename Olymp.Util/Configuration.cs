@@ -12,7 +12,11 @@ namespace Olymp.Util
         public string MasterIP
         {
             get => MasterIP;
-            internal set => MasterIP = Validator.ValidateIp(value);
+            internal set
+            {
+                if (Validator.ValidateAddress(value))
+                    MasterIP = value;
+            }
         }
 
         public bool WebUI { get; internal set; }
