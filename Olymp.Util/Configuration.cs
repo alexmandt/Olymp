@@ -9,7 +9,16 @@ namespace Olymp.Util
 
     public class Configuration
     {
-        public string MasterIP { get; internal set; }
+        public string MasterIP
+        {
+            get => MasterIP;
+            internal set
+            {
+                if (Validator.ValidateAddress(value))
+                    MasterIP = value;
+            }
+        }
+
         public bool WebUI { get; internal set; }
         public Role? Role { get; internal set; } = null;
         public string Name { get; internal set; }
