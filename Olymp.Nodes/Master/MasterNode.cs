@@ -14,7 +14,7 @@ namespace Olymp.Nodes.Master
             Success("Started MasterNode!", _name);
         }
 
-        protected override (Command cmd, IMessage unencryptedMessage) Handle(Message message, byte[] unencryptedMessage)
+        protected override (Command cmd, IMessage unencryptedMessage) Handle(BaseMessage message)
         {
             throw new NotImplementedException();
         }

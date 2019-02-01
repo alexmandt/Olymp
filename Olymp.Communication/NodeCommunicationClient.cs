@@ -9,7 +9,7 @@ namespace Olymp.Communication
 {
     public static class NodeCommunicationClient
     {
-        public static (Message Message, byte[] Content) Send(string server, string username, string password,
+        public static (BaseMessage Message, byte[] Content) Send(string server, string username, string password,
             object message, Command command, string name)
         {
             TcpClient client = null;
@@ -27,7 +27,7 @@ namespace Olymp.Communication
                 data = new byte[256];
                 stream.Read(data, 0, data.Length);
 
-                var returnData = MessagePackSerializer.Deserialize<Message>(data);
+                var returnData = MessagePackSerializer.Deserialize<BaseMessage>(data);
                 return (
                     returnData,
                     RijndaelManager.Decrypt(returnData.Content, MD5Helper.CalculateMD5Hash(password))
@@ -54,7 +54,7 @@ namespace Olymp.Communication
         {
             password = MD5Helper.CalculateMD5Hash(password);
             var bytes = MessagePackSerializer.Serialize(message);
-            return MessagePackSerializer.Serialize(new Message
+            return MessagePackSerializer.Serialize(new BaseMessage
             {
                 User = username,
                 Command = command,
