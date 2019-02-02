@@ -22,19 +22,22 @@ namespace Olymp.Util
             @"^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$",
             RegexOptions.Compiled);
 
-        //TODO: Implement reference method with UriParser
         public static bool ValidateAddress(string address)
         {
             if (string.IsNullOrEmpty(address))
                 throw new ArgumentNullException(nameof(address));
 
-            var match = Ipv4Regex.IsMatch(address) ||
-                        Ipv6Regex.IsMatch(address) ||
-                        HostnameRegex.IsMatch(address);
-
-
-            if (!match) throw new InvalidIpOrHostnameException(address);
-            return true;
+            switch (Uri.CheckHostName(address))
+            {
+                case UriHostNameType.Dns:
+                    return Ipv4Regex.IsMatch(address);
+                case UriHostNameType.IPv4:
+                    return Ipv4Regex.IsMatch(address);
+                case UriHostNameType.IPv6:
+                    return Ipv6Regex.IsMatch(address);
+                default:
+                    throw new InvalidIpOrHostnameException(nameof(address));
+            }
         }
 
         public static bool ValidatePort(string port)
