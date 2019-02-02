@@ -30,7 +30,7 @@ namespace Olymp.Util
             switch (Uri.CheckHostName(address))
             {
                 case UriHostNameType.Dns:
-                    return Ipv4Regex.IsMatch(address);
+                    return HostnameRegex.IsMatch(address);
                 case UriHostNameType.IPv4:
                     return Ipv4Regex.IsMatch(address);
                 case UriHostNameType.IPv6:

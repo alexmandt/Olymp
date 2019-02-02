@@ -30,9 +30,9 @@ namespace NUnitTest.Olymp.Util
         [Test]
         public void EnsureInvalidIPv4AddressValidationWorksProperly()
         {
-            const string invalidIPv4 = "277.3.3.2";
+            const string invalidIPv4 = "0.0.0.@";
 
-            Assert.Throws<InvalidIpException>(() => Validator.ValidateAddress(invalidIPv4));
+            Assert.Throws<InvalidIpOrHostnameException>(() => Validator.ValidateAddress(invalidIPv4));
         }
 
         [Test]
