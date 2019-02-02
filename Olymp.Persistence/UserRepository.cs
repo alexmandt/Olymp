@@ -55,7 +55,7 @@ namespace Olymp.Persistence
             _db.Users.Remove(GetUser(name));
             _db.SaveChanges();
         }
-        
+
         private StoreContext.User ConvertToUser(AddUserMessage newUserMessage)
         {
             return new StoreContext.User
