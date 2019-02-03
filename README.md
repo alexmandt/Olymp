@@ -28,19 +28,19 @@ $ olymp --master --name master.local --webui
 **Machine 1**
 
 ```bash
-$ olymp --child 192.168.0.100:17930 --name child1.local --user admin --password admin
+$ olymp --child olymp://192.168.0.100/connect --name child1.local --user admin --password admin
 ```
 
 **Machine 2**
 
 ```bash
-$ olymp --child 192.168.0.100:17930 --name child2.local --user admin --password admin
+$ olymp --child olymp://192.168.0.100:17930/connect --name child2.local --user admin --password admin
 ```
 
 ### Connect to master node CLI configuration :electric_plug: :older_man:
 
 ```bash
-$ olymp --configure localhost:17929 --user admin --password admin
+$ olymp --configure olymp://localhost/configure --user admin --password admin
 master.local>
 ```
 
@@ -85,10 +85,11 @@ master.local> put pipeline "/home/u1/add.js" as "add"
 master.local> distribute "add" to self
 ```
 
-### Default ports (master)
+<!--### Default ports (master)
 
 * Configuration: 17929
 * Child connections: 17930
+TODO: Move to wiki -->
 
 ## Contributors ✨
 
