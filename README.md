@@ -59,7 +59,7 @@ master.local> distribute "calculator" to "child1.local"
 master.local> distribute "calculator" to "child2.local"
 ```
 
-### Write a simple pipeline ✍️ ⚞✉️⚟
+### Write a simple pipeline ✍️ →:envelope:→
 
 This pipeline can access our calculator program and use it from our master node.
 
@@ -79,8 +79,7 @@ function add(w,x,y,z){
 }
 ```
 
-### Deploy the pipeline :arrow_up: ⚞✉️⚟
-
+### Deploy the pipeline :arrow_up: →:envelope:→
 ```bash
 master.local> put pipeline "/home/u1/add.js" as "add"
 master.local> distribute "add" to self
@@ -100,3 +99,5 @@ master.local> distribute "add" to self
 ## Contributing
 
 [![GitHub issues by-label](https://img.shields.io/github/issues/Azer0s/Olymp/good%20first%20issue.svg)](https://img.shields.io/github/issues/Azer0s/Olymp/good%20first%20issue.svg)
+
+<!--🔜🔛🔝-->
