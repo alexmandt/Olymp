@@ -13,9 +13,9 @@ Olymp supports multiple languages & runtimes (like Node, C#, Java, Python or Rub
 
 Currently, we are in pre-alpha stage. To stay updated, just leave a star.
 
-## Getting started
+## Getting started :chart_with_upwards_trend:
 
-### Run master node
+### Run master node :runner: :older_man:
 
 **Master machine (IP: 192.168.0.100)**
 
@@ -23,7 +23,7 @@ Currently, we are in pre-alpha stage. To stay updated, just leave a star.
 $ olymp --master --name master.local --webui
 ```
 
-### Run child nodes
+### Run child nodes :runner: :baby: :baby:
 
 **Machine 1**
 
@@ -37,14 +37,14 @@ $ olymp --child 192.168.0.100:17930 --name child1.local --user admin --password 
 $ olymp --child 192.168.0.100:17930 --name child2.local --user admin --password admin
 ```
 
-### Connect to master node CLI configuration
+### Connect to master node CLI configuration :electric_plug: :older_man:
 
 ```bash
 $ olymp --configure localhost:17929 --user admin --password admin
 master.local>
 ```
 
-### Upload DLL to master node
+### Upload  worker program to master node :arrow_up: :construction_worker:
 
 We will upload a simple calculator program that we wrote.
 
@@ -52,14 +52,14 @@ We will upload a simple calculator program that we wrote.
 master.local> put program "/home/u1/calc.dll" as "calculator"
 ```
 
-### Distribute DLL to child nodes
+### Distribute worker program to child nodes :ship: :construction_worker:
 
 ```bash
 master.local> distribute "calculator" to "child1.local"
 master.local> distribute "calculator" to "child2.local"
 ```
 
-### Write a simple pipeline
+### Write a simple pipeline ✍️ ⚞✉️⚟
 
 This pipeline can access our calculator program and use it from our master node.
 
@@ -79,7 +79,7 @@ function add(w,x,y,z){
 }
 ```
 
-### Deploy the pipeline
+### Deploy the pipeline :arrow_up: ⚞✉️⚟
 
 ```bash
 master.local> put pipeline "/home/u1/add.js" as "add"
@@ -90,6 +90,12 @@ master.local> distribute "add" to self
 
 * Configuration: 17929
 * Child connections: 17930
+
+## Contributors ✨
+
+<!-- prettier-ignore -->
+| [<img src="https://avatars1.githubusercontent.com/u/16290284?s=460&v=4" width="100px;" alt="Ariel Simulevski"/><br /><sub><b>Ariel Simulevski</b></sub>](https://github.com/Azer0s)<br />[💻](https://github.com/Azer0s/Olymp/commits?author=Azer0s "Code")[🤔](https://github.com/Azer0s/Olymp/issues/created_by/Azer0s "Issues & Ideas")[🚧](#admin "Owner")[💬](#qa-Azer0s "Q&A")[👀](https://github.com/Azer0s/Olymp/pulls?utf8=%E2%9C%93&q=is%3Apr+reviewed-by%3AAzer0s+ "Reviews") | [<img src="https://avatars2.githubusercontent.com/u/26521741?s=460&v=4" width="100px;" alt="Dimitar Rusev"/><br /><sub><b>Dimitar Rusev</b></sub>](https://github.com/Mitiko)<br />[💻](https://github.com/Azer0s/Olymp/commits?author=Mitiko "Code")[🤔](https://github.com/Azer0s/Olymp/issues/created_by/Mitiko "Issues & Ideas")[💬](#qa-Mitiko "Q&A")[🔧](https://github.com/Mitiko/OlympTools "Tools")| [<img src="https://avatars1.githubusercontent.com/u/16230651?s=460&v=4" width="100px;" alt="Ali Sheikh"/><br /><sub><b>Ali Sheikh</b></sub>](https://github.com/alaeschaik)<br />[💻](https://github.com/Azer0s/Olymp/commits?author=alaeschaik "Code")[🎨](#design-alaeschaik "Design")[💬](#qa-alaeschaik "Q&A")[⚠️](#tests-alaeschaik "Testing") |
+| :---: | :---: | :---: |
 
 ## Contributing
 
