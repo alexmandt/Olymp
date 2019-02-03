@@ -90,3 +90,7 @@ master.local> distribute "add" to self
 
 * Configuration: 17929
 * Child connections: 17930
+
+## Contributing
+
+[![GitHub issues by-label](https://img.shields.io/github/issues/Azer0s/Olymp/good%20first%20issue.svg)](https://img.shields.io/github/issues/Azer0s/Olymp/good%20first%20issue.svg)
