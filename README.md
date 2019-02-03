@@ -31,6 +31,12 @@ $ olymp --master --name master.local --webui
 $ olymp --child olymp://192.168.0.100/connect --name child1.local --user admin --password admin
 ```
 
+or with a simple connection string:
+
+```bash
+$ olymp --child olymp://192.168.0.100/connect?user=admin&password=admin --name child1.local
+```
+
 **Machine 2**
 
 ```bash
