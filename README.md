@@ -1,8 +1,19 @@
-# 🏔️ Olymp
+![](/assets/logo-wide.png)
 
-## The simple distributed compute engine
+<!-- Badges here -->
+[![Azure Build Status](https://dev.azure.com/arielsimulevski0813/arielsimulevski/_apis/build/status/Azer0s.Olymp?branchName=dev)](https://dev.azure.com/arielsimulevski0813/arielsimulevski/_build/latest?definitionId=1&branchName=dev)
+[![Travis Build Status](https://travis-ci.org/Azer0s/Olymp.svg?branch=dev)](https://travis-ci.org/Azer0s/Olymp)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/Azer0s/Olymp/blob/master/README.md)
+[![made-with-csharp](https://img.shields.io/badge/Made%20with-C%23-blue.svg)](https://de.wikipedia.org/wiki/C-Sharp)
+[![Built with](https://img.shields.io/badge/Built%20with-%20%F0%9F%96%A4%20-red.svg)](https://img.shields.io/badge/Built%20with-%20%F0%9F%96%A4%20-red.svg)
 
-## Get started
+Olymp is an open source distributed compute engine which allows you to build and deploy distributed compute applications fast without writing any boilerplate communication code. Write an application, upload it to your private Olymp cloud and look at it go!
+
+Olymp supports multiple languages & runtimes (like Node, C#, Java, Python or Ruby). This means that you can write certain parts of your application in the language which is best suitable for it. Stop limiting yourself to one language when you can use the right tool for the job.
+
+Currently, we are in pre-alpha stage. To stay updated, just leave a star.
+
+## Getting started
 
 ### Run master node
 
