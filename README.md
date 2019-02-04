@@ -1,11 +1,21 @@
 ![](/assets/logo-wide.png)
 
-<!-- Badges here -->
+<!-- Badges here
 [![Azure Build Status](https://dev.azure.com/arielsimulevski0813/arielsimulevski/_apis/build/status/Azer0s.Olymp?branchName=dev)](https://dev.azure.com/arielsimulevski0813/arielsimulevski/_build/latest?definitionId=1&branchName=dev)
 [![Travis Build Status](https://travis-ci.org/Azer0s/Olymp.svg?branch=dev)](https://travis-ci.org/Azer0s/Olymp)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/Azer0s/Olymp/blob/master/README.md)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/Azer0s/Olymp/blob/master/LICENSE)
 [![made-with-csharp](https://img.shields.io/badge/Made%20with-C%23-blue.svg)](https://de.wikipedia.org/wiki/C-Sharp)
 [![Built with](https://img.shields.io/badge/Built%20with-%20%F0%9F%96%A4%20-red.svg)](https://img.shields.io/badge/Built%20with-%20%F0%9F%96%A4%20-red.svg)
+[![Chat on](https://img.shields.io/badge/Chat-on%20discord-7289da.svg)(https://discord.gg/Cf7drJg) -->
+
+<p align="center">
+  <a href="https://dev.azure.com/arielsimulevski0813/arielsimulevski/_build/latest?definitionId=1&branchName=dev"><img src="https://dev.azure.com/arielsimulevski0813/arielsimulevski/_apis/build/status/Azer0s.Olymp?branchName=dev" alt="Build Status"></a>
+  <a href="https://travis-ci.org/Azer0s/Olymp"><img src="https://travis-ci.org/Azer0s/Olymp.svg?branch=dev" alt="Coverage Status"></a>
+  <a href="https://github.com/Azer0s/Olymp/blob/master/LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="Downloads"></a>
+  <a href="https://de.wikipedia.org/wiki/C-Sharp"><img src="https://img.shields.io/badge/Made%20with-C%23-blue.svg" alt="Version"></a>
+  <a href="#love"><img src="https://img.shields.io/badge/Built%20with-%20%F0%9F%96%A4%20-red.svg" alt="License"></a>
+  <a href="https://discord.gg/Cf7drJg"><img src="https://img.shields.io/badge/Chat-on%20discord-7289da.svg" alt="Chat"></a>
+</p>
 
 Olymp is an open source distributed compute engine which allows you to build and deploy distributed compute applications fast without writing any boilerplate communication code. Write an application, upload it to your private Olymp cloud and look at it go!
 
