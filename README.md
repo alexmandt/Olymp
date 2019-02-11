@@ -60,45 +60,70 @@ $ olymp --configure olymp://localhost/configure --user admin --password admin
 master.local>
 ```
 
-### Upload  worker program to master node :arrow_up: :construction_worker:
+### calc.js :1234:  🤓  :construction_worker:
+
+```js
+...
+module.exports.add = function (event, context){
+  ...
+  return result; //automatically returns promise
+}
+...
+```
+
+### Upload worker program to master node :arrow_up: :construction_worker:
 
 We will upload a simple calculator program that we wrote.
 
 ```bash
-master.local> put program "/home/u1/calc.dll" as "calculator"
+master.local> put program "/home/u1/calc.js" as "calculator" on "node"
+```
+
+### Hook the worker program 🎣  :construction_worker:
+
+```bash
+master.local> hook "calculator" to "/api/calculator/*"
 ```
 
 ### Distribute worker program to child nodes :ship: :construction_worker:
+
+When distributed to multiple child nodes, the worker program is automatically load balanced.
 
 ```bash
 master.local> distribute "calculator" to "child1.local"
 master.local> distribute "calculator" to "child2.local"
 ```
 
-### Write a simple pipeline ✍️ →:envelope:→
+### Write a simple pipeline ✍️ :incoming_envelope:
 
 This pipeline can access our calculator program and use it from our master node.
-
+>
 ```js
-function add(w,x,y,z){
-    var node1 = getNode("child1.local");
-    var node2 = getNode("child2.local");
-    var c1 = node1.getWorker("calculator");
-    var c2 = node2.getWorker("calculator");
+module.exports.main = function(event, context){
+
+    var w = context.param.w, x = context.param.x, y = context.param.y, z = context.param.z;
+
+    var calculator = workers.get("calculator");
     
     simultan([
-        function(){r1 = c1.add(w,x);},
-        function(){r2 = c2.add(y,z);}
+        function(){r1 = calculator.add(w,x);},
+        function(){r2 = calculator.add(y,z);}
     ]);
+    /* 
+    Because Olymp automatically balances the load,
+    the first add operation is executed on child1.local,
+    the second on child2.local
+    */
     
     return r1 + r2;
 }
 ```
 
-### Deploy the pipeline :arrow_up: →:envelope:→
+### Deploy the pipeline :arrow_up: :incoming_envelope:
 ```bash
 master.local> put pipeline "/home/u1/add.js" as "add"
 master.local> distribute "add" to self
+master.local> hook "add" to "/api/pipelines/add"
 ```
 
 <!--### Default ports (master)
