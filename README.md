@@ -119,6 +119,8 @@ module.exports.main = function(event, context){
 }
 ```
 
+Internally, nodes communicate over the Olymp protocol over TCP. Client to master communication can either be over TCP or over HTTP (through HTTP hooks).
+
 ### Deploy the pipeline :arrow_up: :incoming_envelope:
 ```bash
 master.local> put pipeline "/home/u1/add.js" as "add"
