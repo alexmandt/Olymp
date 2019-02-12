@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olymp.Persistence", "Olymp.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olymp.Communication.Messages", "Olymp.Communication.Messages\Olymp.Communication.Messages.csproj", "{A40DCFE7-D180-43AF-A834-23476D3637AC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NUnitTest.Olymp.Util", "NUnitTest.Olymp.Util\NUnitTest.Olymp.Util.csproj", "{D530A4D7-D926-4063-96AC-0632180EF703}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,5 +50,9 @@ Global
 		{A40DCFE7-D180-43AF-A834-23476D3637AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A40DCFE7-D180-43AF-A834-23476D3637AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A40DCFE7-D180-43AF-A834-23476D3637AC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D530A4D7-D926-4063-96AC-0632180EF703}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D530A4D7-D926-4063-96AC-0632180EF703}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D530A4D7-D926-4063-96AC-0632180EF703}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D530A4D7-D926-4063-96AC-0632180EF703}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
