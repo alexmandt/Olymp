@@ -6,15 +6,15 @@ namespace Olymp.Util
 {
     public static class Validator
     {
-        private static readonly Regex Ipv4Regex = new Regex(
+        public static readonly Regex Ipv4Regex = new Regex(
             @"^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$",
             RegexOptions.Compiled);
 
-        private static readonly Regex PortRegex = new Regex(
+        public static readonly Regex PortRegex = new Regex(
             @"^([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$",
             RegexOptions.Compiled);
 
-        private static readonly Regex Ipv6Regex = new Regex(
+        public static readonly Regex Ipv6Regex = new Regex(
             @"^([0-9a-f]{0,4}:){2,7}(:|[0-9a-f]{1,4})$", RegexOptions.Compiled);
 
         //HostnameRegex is valid as per RFC 1123.

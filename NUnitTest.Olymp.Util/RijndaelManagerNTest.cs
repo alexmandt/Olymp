@@ -14,9 +14,9 @@ namespace NUnitTest.Olymp.Util
             const string TestPassword = "VeryS3cur3P0ssw0rd";
             var TextToCheck = Encoding.ASCII.GetBytes("this text is a test.");
 
-            var calculedByteArry = RijndaelManager.Encrypt(TextToCheck, TestPassword);
+            var calculatedByteArray = RijndaelManager.Encrypt(TextToCheck, TestPassword);
 
-            Assert.That(RijndaelManager.Decrypt(calculedByteArry, TestPassword).SequenceEqual(TextToCheck));
+            Assert.That(RijndaelManager.Decrypt(calculatedByteArray, TestPassword).SequenceEqual(TextToCheck));
         }
     }
 }
