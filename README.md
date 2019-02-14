@@ -64,9 +64,17 @@ master.local>
 
 ```js
 ...
-module.exports.add = function (event, context){
+module.exports.add = function (event, context, callback){
   ...
-  return result; //automatically returns promise
+  callback (null, result);
+}
+
+module.exports.default = function (event, context, callback){
+  switch(event.type){
+    case "add":
+      module.exports.add(event, context, callback);
+    ...
+  }
 }
 ...
 ```
