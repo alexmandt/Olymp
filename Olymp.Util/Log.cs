@@ -30,6 +30,15 @@ namespace Olymp.Util
             }
         }
 
+        public static void Warning(string message, string node = "")
+        {
+            lock (Locker)
+            {
+                Time(node);
+                Console.WriteLine($" {message}", Yellow);
+            }
+        }
+
         public static void Info(string message, string node = "")
         {
             lock (Locker)
