@@ -107,7 +107,7 @@ master.local> distribute "calculator" to "child2.local"
 This pipeline can access our calculator program and use it from our master node.
 >
 ```js
-module.exports.main = function(event, context){
+module.exports.default = function(event, context, callback){
 
     var w = context.param.w, x = context.param.x, y = context.param.y, z = context.param.z;
 
@@ -123,7 +123,7 @@ module.exports.main = function(event, context){
     the second on child2.local
     */
     
-    return r1 + r2;
+    callback(null, r1 + r2);
 }
 ```
 
