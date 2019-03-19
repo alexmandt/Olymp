@@ -84,7 +84,7 @@ module.exports.default = function (event, context, callback){
 We will upload a simple calculator program that we wrote.
 
 ```bash
-master.local> put program "/home/u1/calc.js" as "calculator" on "node"
+master.local> put program "/home/u1/calc.js" as "calculator" on "nodejs"
 ```
 
 ### Hook the worker program 🎣  :construction_worker:
