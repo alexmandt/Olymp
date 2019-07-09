@@ -9,4 +9,8 @@
       <ProjectReference Include="..\Olymp.Util\Olymp.Util.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Olymp.Communication.Messages" Version="0.0.1" />
+    </ItemGroup>
+
 </Project>
