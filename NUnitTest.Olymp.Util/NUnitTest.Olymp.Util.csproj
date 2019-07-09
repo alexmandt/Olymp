@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp2.1</TargetFramework>
+
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="MessagePack" Version="1.7.3"/>
+        <PackageReference Include="nunit" Version="3.11.0"/>
+        <PackageReference Include="NUnit3TestAdapter" Version="3.11.0"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="testfiles\ipv4.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="testfiles\ipv6.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Olymp.Util\Olymp.Util.csproj"/>
+    </ItemGroup>
+
+</Project>
