@@ -12,10 +12,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olymp.Nodes", "Olymp.Nodes\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olymp.Persistence", "Olymp.Persistence\Olymp.Persistence.csproj", "{9424FC53-1A66-443E-95C7-4AD1E2314F13}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olymp.Communication.Messages", "Olymp.Communication.Messages\Olymp.Communication.Messages.csproj", "{A40DCFE7-D180-43AF-A834-23476D3637AC}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NUnitTest.Olymp.Util", "NUnitTest.Olymp.Util\NUnitTest.Olymp.Util.csproj", "{D530A4D7-D926-4063-96AC-0632180EF703}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
