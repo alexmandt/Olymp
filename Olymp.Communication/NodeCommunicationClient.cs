@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Net.Sockets;
 using MessagePack;
 using Olymp.Util;
@@ -16,7 +15,7 @@ namespace Olymp.Communication
             NetworkStream stream = null;
             try
             {
-                Validator.ValidateStringValues(new string[] {username, password, message.ToString()});
+                Validator.ValidateStringValues(username, password, message.ToString());
                 var data = EncryptMessage(username, password, command, message);
                 // TODO: Parse ip adress better
                 client = new TcpClient(server.Split(":")[0], int.Parse(server.Split(":")[1]));

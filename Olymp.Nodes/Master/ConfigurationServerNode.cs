@@ -34,6 +34,7 @@ namespace Olymp.Nodes.Master
                         Error($"Couldn't add user {addUserMsg.Username}!", _name);
                         return (Command.FAIL, new SingleValueMessage {Value = addUserMsg.Username});
                     }
+
                 case Command.CONF_PUT_PROGRAM:
                 // Not implemented => default to pipeline
                 case Command.CONF_PUT_PIPELINE:
@@ -47,6 +48,7 @@ namespace Olymp.Nodes.Master
                     {
                         return (Command.FAIL, new SingleValueMessage {Value = file.TargetName});
                     }
+
                 case Command.CONF_SET_USER_LEVEL:
                     var setUserLevelMessage = MessagePackSerializer.Deserialize<SetUserLevelMessage>(message.Content);
 
@@ -61,6 +63,7 @@ namespace Olymp.Nodes.Master
                     {
                         return (Command.FAIL, setUserLevelMessage);
                     }
+
                 case Command.CONF_REMOVE_USER:
                     var removeUser = MessagePackSerializer.Deserialize<SingleValueMessage>(message.Content);
                     try
@@ -72,6 +75,7 @@ namespace Olymp.Nodes.Master
                     {
                         return (Command.FAIL, removeUser);
                     }
+
 //                case Command.CONF_DISTRIBUTE:
 //                    // TODO: Implement a distribute command
 //                    return (Command.FAIL, "NOT IMPLEMENTED YET");
