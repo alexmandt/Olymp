@@ -25,8 +25,8 @@ namespace Olymp.Nodes.Configuration
         private readonly Regex ok = new Regex("^ *ok\\? *$", RegexOptions.Compiled);
         private readonly Regex putPipeline = new Regex("^ *pu?t? *pip?e?l?i?n?e? *\"(.+)\" *as? *\"(.+)\" *on? *ru?n?t?i?m?e? *\"(.+)\" *$", RegexOptions.Compiled);
         private readonly Regex putProgram = new Regex("^ *pu?t? *pro?g?r?a?m? *\"(.+)\" *as? *\"(.+)\" *on? *ru?n?t?i?m?e? *\"(.+)\" *$", RegexOptions.Compiled);
-        private readonly Regex setUserLevel = new Regex("^ *se?t? *us?e?r? *\"(.+)\" *le?v?e?l? *([0-9]) *$", RegexOptions.Compiled);
         private readonly Regex removeUser = new Regex("^ *re?m?o?v?e? *us?e?r? *\"(.+)\" *$");
+        private readonly Regex setUserLevel = new Regex("^ *se?t? *us?e?r? *\"(.+)\" *le?v?e?l? *([0-9]) *$", RegexOptions.Compiled);
 
         public ConfigurationTool(Util.Configuration configuration)
         {

@@ -56,7 +56,7 @@ namespace Olymp.Communication
 
                             try
                             {
-                                byte[] decryptedContents = RijndaelManager.Decrypt(deserializedMessage.Content, pwd);
+                                var decryptedContents = RijndaelManager.Decrypt(deserializedMessage.Content, pwd);
                                 deserializedMessage.Content = decryptedContents;
                             }
                             catch (Exception)
@@ -106,8 +106,9 @@ namespace Olymp.Communication
                                     catch (Exception)
                                     {
                                         responseMsg.Command = Command.FAIL;
-                                        responseMsg.Content = RijndaelManager.Encrypt(MessagePackSerializer.Serialize(new SingleValueMessage{Value = ":("}), pwd);
+                                        responseMsg.Content = RijndaelManager.Encrypt(MessagePackSerializer.Serialize(new SingleValueMessage {Value = ":("}), pwd);
                                     }
+
                                     break;
                             }
 
