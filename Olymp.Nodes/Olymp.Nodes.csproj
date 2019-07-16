@@ -10,7 +10,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Olymp.Communication.Messages" Version="0.0.1" />
+      <PackageReference Include="Olymp.Communication.Messages" Version="0.1.1" />
     </ItemGroup>
 
 </Project>
