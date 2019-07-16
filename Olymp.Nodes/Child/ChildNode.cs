@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using MessagePack;
 using Olymp.Communication;
@@ -18,31 +19,35 @@ namespace Olymp.Nodes.Child
             switch (message.Command)
             {
                 case Command.MC_GET_STATUS:
-                    return (Command.CM_REPORT_STATUS, this.CheckStatus());
+                    return (Command.CM_REPORT_STATUS, CheckStatus());
                 case Command.MC_PUT_PROGRAM:
-                    return this.SaveProgram(message);
+                    return SaveProgram(message);
                 default:
-                    return (Command.UNKNOWN, new SingleValueMessage() { Value = "Child node didn't recognize command." });
+                    return (Command.UNKNOWN, new SingleValueMessage {Value = "Child node didn't recognize command."});
             }
         }
 
         private (Command, IMessage) SaveProgram(BaseMessage message)
         {
             var putProgramMessage = MessagePackSerializer.Deserialize<PutMessage>(message.Content);
-            if(putProgramMessage.TargetType != TargetTypes.PROGRAM)
-                return (Command.FAIL, new SingleValueMessage() { Value = "Invalid use. Pipelines must be sent to master!"});
+            if (putProgramMessage.TargetType != TargetTypes.PROGRAM)
+                return (Command.FAIL, new SingleValueMessage {Value = "Invalid use. Pipelines must be sent to master!"});
 
             // Terrible MVP below:
-            using (var fs = new FileStream($"./{System.Guid.NewGuid()}", FileMode.CreateNew))
+            using (var fs = new FileStream($"./{Guid.NewGuid()}", FileMode.CreateNew))
             {
                 foreach (var @byte in message.Content)
                 {
                     fs.WriteByte(@byte);
                 }
             }
-            return (Command.CM_REPORT_RESULT, new SingleValueMessage() { Value  = "Program saved to memory. Ready for execution." });
+
+            return (Command.CM_REPORT_RESULT, new SingleValueMessage {Value = "Program saved to memory. Ready for execution."});
         }
 
-        private IMessage CheckStatus() => new SingleValueMessage() { Value = $"{_name} is healthy!" };
+        private IMessage CheckStatus()
+        {
+            return new SingleValueMessage {Value = $"{_name} is healthy!"};
+        }
     }
 }
